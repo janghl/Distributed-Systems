@@ -1,3 +1,5 @@
+#pragma once
+
 #include <initializer_list>
 #include <stdio.h>
 #include <sys/types.h>

@@ -24,5 +24,8 @@ behave_debug: behave.cpp
 behave: behave.cpp
 	$(CXX) $(CXXFLAGS) behave.cpp -o behave.out
 
+log: log.cpp
+	$(CXX) $(CXXFLAGS) log.cpp -o log.out
+
 clean:
 	rm *.out machine*.log *.temp
