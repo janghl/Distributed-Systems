@@ -35,24 +35,24 @@ public:
   }
 
   void StartServer() {
+    std::cout << "trying to start server\n";
     server_fd_ = socket(AF_INET, SOCK_STREAM, 0);
     if (bind(server_fd_, result_->ai_addr, result_->ai_addrlen) != 0) {
       perror("bind");
       exit(1);
     }
+    std::cout << "bound";
     if (listen(server_fd_, 10) != 0) {
       perror("listen");
       exit(1);
     }
     struct sockaddr_in *result_addr = (struct sockaddr_in *)result_->ai_addr;
-    printf("Listening on file descriptor %d, port %d", server_fd_,
+    printf("Listening on file descriptor %d, port %d\n", server_fd_,
            ntohs(result_addr->sin_port));
-    std::cout << std::endl;
     while (true) {
       int client_fd = accept(server_fd_, NULL, NULL);
       printf("Connection made: client_fd=%d, spinning up background thread\n",
              client_fd);
-      std:: cout << std::endl;
       std::thread background_thread{&Server::HandleClient, this, client_fd};
       // Detach to allow multiple client connections
       background_thread.detach();
@@ -68,7 +68,6 @@ public:
 
     recv(client_fd, read_buffer, 1024, 0);
     printf("Received pattern: %s\n", read_buffer);
-    std::cout << std::endl;
 
     char grep_buffer[64];
     sprintf(grep_buffer, "grep -r --include=\\*.log %s ./", read_buffer);
