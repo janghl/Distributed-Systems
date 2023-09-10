@@ -42,9 +42,9 @@ inline void logging(std::string command, int line_number){
 			double random_num = ((double) rand() / (RAND_MAX));
 			if (random_num < rare)
 				log<<"rare pattern: "<<pattern4<<std::endl;
-			if (somewhat_frequent < rare)
+			if (random_num < somewhat_frequent)
 				log<<"somewhat frequent pattern: "<<pattern5<<std::endl;
-			if (frequent < rare)
+			if (random_num < frequent)
 				log<<"frequent pattern: "<<pattern6<<std::endl;
 		}
 		log.close();
