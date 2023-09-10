@@ -25,4 +25,4 @@ behave: behave.cpp
 	$(CXX) $(CXXFLAGS) behave.cpp -o behave.out
 
 clean:
-	rm *.out *.log
+	rm *.out machine*.log *.temp
