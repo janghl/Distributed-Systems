@@ -39,6 +39,7 @@ inline void logging(std::string command, int line_number){
 			log<<"occur in all logs: "<<pattern3<<std::endl;
 
 			//generate rare, somewhat frequent and frequent patterns
+			srand(time(0));
 			double random_num = ((double) rand() / (RAND_MAX));
 			if (random_num < rare)
 				log<<"rare pattern: "<<pattern4<<std::endl;
