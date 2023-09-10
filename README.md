@@ -2,6 +2,12 @@
 
 This program runs a grep command to query log files on various virtual machines for a specific pattern.
 
+## Details
+
+ - This program starts TCP servers on port 8080 on boxes to be queried
+ - The client handles connections to TCP servers in parallel in asynchronously using the std::async API
+ - Distributed grep output includes counts of lines returned from each box, total lines returned, and total time spent on the distributed grep operation
+
 ## Usage
 
 # Single Server
