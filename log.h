@@ -13,7 +13,6 @@
 #include <fstream>
 #include <filesystem>
 #include <sys/syscall.h>
-#include <random>
 
 inline void logging(std::string command, int line_number){
 		std::string pattern1 = "one-log";
@@ -32,13 +31,7 @@ inline void logging(std::string command, int line_number){
 		double rare = 0.05;
 		double somewhat_frequent = 0.5;
 		double frequent = 0.8;
-		int count = 0;
-		std::random_device frequency_rd;
-		std::default_random_engine frequency_generator(frequency_rd());
-		std::uniform_int_distribution<int> frequency_distribution(0,1);
-
-		while(count++ < line_number){
-			//generate lines that occur in one/some/all logs
+		for (int i = 0; i < line_number; ++i) {
 			if(machine==1)
 				log<<"occur in one log: "<<pattern1<<std::endl;
 			if(machine%2==0)
@@ -46,12 +39,12 @@ inline void logging(std::string command, int line_number){
 			log<<"occur in all logs: "<<pattern3<<std::endl;
 
 			//generate rare, somewhat frequent and frequent patterns
-			int frequency = frequency_distribution(frequency_generator);
-			if(frequency<rare)
+			double random_num = ((double) rand() / (RAND_MAX));
+			if (random_num < rare)
 				log<<"rare pattern: "<<pattern4<<std::endl;
-			if(frequency<somewhat_frequent)
+			if (somewhat_frequent < rare)
 				log<<"somewhat frequent pattern: "<<pattern5<<std::endl;
-			if(frequency<frequent)
+			if (frequent < rare)
 				log<<"frequent pattern: "<<pattern6<<std::endl;
 		}
 		log.close();
