@@ -27,15 +27,17 @@ public:
     hints.ai_family = AF_INET;
     hints.ai_socktype = SOCK_STREAM;
     hints.ai_flags = AI_PASSIVE;
+    std::cout << "Am I blocking here?" << std::endl;
     int s = getaddrinfo(NULL, "8080", &hints, &result_);
     if (s != 0) {
       fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(s));
       exit(1);
     }
+    std::cout << "Got out of being blocked" << std::endl;
   }
 
   void StartServer() {
-    std::cout << "trying to start server\n";
+    std::cout << "trying to start server" << std::endl;;
     server_fd_ = socket(AF_INET, SOCK_STREAM, 0);
     if (bind(server_fd_, result_->ai_addr, result_->ai_addrlen) != 0) {
       perror("bind");
@@ -47,8 +49,9 @@ public:
       exit(1);
     }
     struct sockaddr_in *result_addr = (struct sockaddr_in *)result_->ai_addr;
-    printf("Listening on file descriptor %d, port %d\n", server_fd_,
+    printf("Listening on file descriptor %d, port %d", server_fd_,
            ntohs(result_addr->sin_port));
+    std::cout << std::endl;
     while (true) {
       int client_fd = accept(server_fd_, NULL, NULL);
       printf("Connection made: client_fd=%d, spinning up background thread\n",

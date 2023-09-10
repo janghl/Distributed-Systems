@@ -15,7 +15,7 @@
 #include <sys/syscall.h>
 #include <random>
 
-void logging(std::string command, int line_number){
+inline void logging(std::string command, int line_number){
 		int machine = stoi(command);
 		std::ofstream log("machine"+std::to_string(machine)+".log");
 		if(!log.is_open())
@@ -72,5 +72,6 @@ void logging(std::string command, int line_number){
 				log<<"frequent pattern: "<<sequence6<<std::endl;
 		}
 		log.close();
+		std::cout << "Done logging" << std::endl;
 		return;
 	}
