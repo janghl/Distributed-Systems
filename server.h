@@ -5,6 +5,7 @@
 #include <fstream>
 #include <initializer_list>
 #include <iostream>
+#include <netdb.h>
 #include <netinet/in.h>
 #include <random>
 #include <stdio.h>
@@ -13,101 +14,72 @@
 #include <sys/socket.h>
 #include <sys/syscall.h>
 #include <sys/types.h>
+#include <thread>
 #include <unistd.h>
+#include <iostream>
 
 class Server {
 public:
-  int server_socket;
-  int bind_result;
-  int client_socket;
-
-  void Initialize() {
+  Server() {
     // define IP address structure
-    struct sockaddr_in myaddr;
-    memset(&myaddr, 0, sizeof(sockaddr_in));
-    myaddr.sin_family = AF_INET;
-    myaddr.sin_addr.s_addr = INADDR_ANY;
-    myaddr.sin_port = htons(8080); // host to network port transformation
-
-    // define socket
-    server_socket = socket(AF_INET, SOCK_STREAM, 0);
-    if (server_socket < 0) {
-      perror("socket cannot be created!");
-      return;
-    }
-
-    // bind socket to IP address
-    bind_result = bind(server_socket, (struct sockaddr *)&myaddr,
-                       sizeof(struct sockaddr));
-    if (bind_result < 0) {
-      perror("bind failure!");
-      return;
+    struct addrinfo hints;
+    memset(&hints, 0, sizeof(struct addrinfo));
+    hints.ai_family = AF_INET;
+    hints.ai_socktype = SOCK_STREAM;
+    hints.ai_flags = AI_PASSIVE;
+    int s = getaddrinfo(NULL, "8080", &hints, &result_);
+    if (s != 0) {
+      fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(s));
+      exit(1);
     }
   }
 
-  void Listen() {
-    // listen
-    int listen_result = listen(server_socket, 10);
-    if (listen_result < 0) {
-      perror("cannot listen");
-      return;
-    } else
-      std::cout << "open listening!";
+  void StartServer() {
+    std::cout << "trying to start server\n";
+    server_fd_ = socket(AF_INET, SOCK_STREAM, 0);
+    if (bind(server_fd_, result_->ai_addr, result_->ai_addrlen) != 0) {
+      perror("bind");
+      exit(1);
+    }
+    std::cout << "bound";
+    if (listen(server_fd_, 10) != 0) {
+      perror("listen");
+      exit(1);
+    }
+    struct sockaddr_in *result_addr = (struct sockaddr_in *)result_->ai_addr;
+    printf("Listening on file descriptor %d, port %d\n", server_fd_,
+           ntohs(result_addr->sin_port));
+    while (true) {
+      int client_fd = accept(server_fd_, NULL, NULL);
+      printf("Connection made: client_fd=%d, spinning up background thread\n",
+             client_fd);
+      std::thread background_thread{&Server::HandleClient, this, client_fd};
+      // Detach to allow multiple client connections
+      background_thread.detach();
+    }
   }
 
-  void Connect() {
-    // accept block
-    struct sockaddr_in client_addr;
-    socklen_t socket_length = sizeof(struct sockaddr);
-    client_socket =
-        accept(server_socket, (struct sockaddr *)&client_addr, &socket_length);
-    if (client_socket < 0) {
-      perror("acceptance error!");
-      return;
-    }
-    char *client_ip = new char[INET_ADDRSTRLEN];
-    inet_ntop(AF_INET, &client_addr.sin_addr, client_ip,
-              INET_ADDRSTRLEN); // network to host
-    std::cout << "successfully connected to IP: " << client_ip
-              << " and port: " << ntohs(client_addr.sin_port) << std::endl;
-
+  void HandleClient(int client_fd) {
     // allocate buffer memory
-    char buffer[1024];
-    char send_str[1024];
-    memset(buffer, '0', sizeof(buffer));
-    memset(send_str, '0', sizeof(send_str));
+    char read_buffer[1024];
+    char result_buffer[1024];
+    memset(read_buffer, 0, sizeof(read_buffer));
+    memset(result_buffer, 0, sizeof(result_buffer));
 
-    while (recv(client_socket, buffer, sizeof(buffer), 0) > 0) {
-      std::cout << "capture a packet!\n";
-      std::cout << "command = " << buffer << std::endl;
+    recv(client_fd, read_buffer, 1024, 0);
+    printf("Received pattern: %s\n", read_buffer);
 
-      // search the pattern and send
-      std::filesystem::path pwd = std::filesystem::current_path();
-      for (auto file : std::filesystem::directory_iterator(pwd)) {
-        if (file.is_regular_file() && file.path().extension() == ".log") {
-          std::string file_path = std::filesystem::absolute(file).string();
-          std::string command = (std::string)buffer + ">temp.txt";
-          int grep_result = system(command.c_str());
-          if (grep_result != 0)
-            std::cerr << "command fail!" << std::endl;
-          std::ifstream file("temp.txt");
-          while (file.read(send_str, sizeof(send_str))) {
-            send(client_socket, send_str, sizeof(send_str), 0);
-            memset(send_str, '0', sizeof(send_str));
-          }
-          if (file.gcount() > 0) {
-            file.read(send_str, file.gcount());
-            send(client_socket, send_str, file.gcount(), 0);
-          }
-          std::cout << "sent successfully to client!\nfile name: " << file_path
-                    << std::endl;
-        }
-      }
-      memset(buffer, '0', sizeof(buffer));
-      continue;
+    char grep_buffer[64];
+    sprintf(grep_buffer, "grep -r --include=\\*.log %s ./", read_buffer);
+
+    // Open 
+    FILE *fp = popen(grep_buffer, "r");
+    int bytes_read = 0;
+    while ((bytes_read = fread(result_buffer, 1, 1024, fp)) > 0) {
+      send(client_fd, result_buffer, bytes_read, 0);
     }
-    std::cout << "shut down!";
-    close(server_socket);
-    return;
+    close(client_fd);
   }
+  int server_fd_;
+  struct addrinfo *result_;
 };

@@ -7,15 +7,16 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <iostream>
 
 namespace client_utils {
 
 const static char *hosts[] = {
-    "fa23-cs425-6901-cs.illinois.edu", "fa23-cs425-6902-cs.illinois.edu",
-    "fa23-cs425-6903-cs.illinois.edu", "fa23-cs425-6904-cs.illinois.edu",
-    "fa23-cs425-6905-cs.illinois.edu", "fa23-cs425-6906-cs.illinois.edu",
-    "fa23-cs425-6907-cs.illinois.edu", "fa23-cs425-6908-cs.illinois.edu",
-    "fa23-cs425-6909-cs.illinois.edu", "fa23-cs425-6910-cs.illinois.edu",
+    "fa23-cs425-6901.cs.illinois.edu", "fa23-cs425-6902.cs.illinois.edu",
+    "fa23-cs425-6903.cs.illinois.edu", "fa23-cs425-6904.cs.illinois.edu",
+    "fa23-cs425-6905.cs.illinois.edu", "fa23-cs425-6906.cs.illinois.edu",
+    "fa23-cs425-6907.cs.illinois.edu", "fa23-cs425-6908.cs.illinois.edu",
+    "fa23-cs425-6909.cs.illinois.edu", "fa23-cs425-6910.cs.illinois.edu",
 };
 
 /**

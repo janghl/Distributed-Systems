@@ -47,7 +47,7 @@ public:
       std::string line;
       while (std::getline(file, line)) {
         ++counter[i];
-        std::cout << line;
+        std::cout << line << std::endl;
       }
     }
     const auto end_time = std::chrono::high_resolution_clock::now();
@@ -70,7 +70,7 @@ private:
       std::printf("VM %lu matched %lu lines\n", i + 1, counter[i]);
     }
 
-    std::printf("Matched %d lines total in %ld ms",
+    std::printf("Matched %d lines total in %ld ms\n",
                 std::accumulate(counter.begin(), counter.end(), 0),
                 duration.count());
   }
