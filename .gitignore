@@ -34,5 +34,8 @@
 # Logs
 *.log
 
+# Temp files
+*.temp
+
 # VSCode
 .vscode/
