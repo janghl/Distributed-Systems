@@ -31,5 +31,8 @@
 *.out
 *.app
 
+# Logs
+*.log
+
 # VSCode
 .vscode/
