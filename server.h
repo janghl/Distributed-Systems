@@ -40,7 +40,6 @@ public:
       perror("bind");
       exit(1);
     }
-    std::cout << "bound";
     if (listen(server_fd_, 10) != 0) {
       perror("listen");
       exit(1);

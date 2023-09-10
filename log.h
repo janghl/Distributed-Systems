@@ -72,6 +72,5 @@ inline void logging(std::string command, int line_number){
 				log<<"frequent pattern: "<<sequence6<<std::endl;
 		}
 		log.close();
-		std::cout << "Done logging" << std::endl;
 		return;
 	}
