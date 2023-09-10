@@ -27,17 +27,14 @@ public:
     hints.ai_family = AF_INET;
     hints.ai_socktype = SOCK_STREAM;
     hints.ai_flags = AI_PASSIVE;
-    std::cout << "Am I blocking here?" << std::endl;
     int s = getaddrinfo(NULL, "8080", &hints, &result_);
     if (s != 0) {
       fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(s));
       exit(1);
     }
-    std::cout << "Got out of being blocked" << std::endl;
   }
 
   void StartServer() {
-    std::cout << "trying to start server" << std::endl;;
     server_fd_ = socket(AF_INET, SOCK_STREAM, 0);
     if (bind(server_fd_, result_->ai_addr, result_->ai_addrlen) != 0) {
       perror("bind");
@@ -56,6 +53,7 @@ public:
       int client_fd = accept(server_fd_, NULL, NULL);
       printf("Connection made: client_fd=%d, spinning up background thread\n",
              client_fd);
+      std:: cout << std::endl;
       std::thread background_thread{&Server::HandleClient, this, client_fd};
       // Detach to allow multiple client connections
       background_thread.detach();
@@ -71,6 +69,7 @@ public:
 
     recv(client_fd, read_buffer, 1024, 0);
     printf("Received pattern: %s\n", read_buffer);
+    std::cout << std::endl;
 
     char grep_buffer[64];
     sprintf(grep_buffer, "grep -r --include=\\*.log %s ./", read_buffer);

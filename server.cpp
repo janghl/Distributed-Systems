@@ -7,7 +7,6 @@ int main(int argc, char **argv) {
 	  return 1;
   }
   logging(argv[1], 1000);
-  std::cout << "Ready to start server" << std::endl;
   Server server;
   server.StartServer();
   // unreachable
