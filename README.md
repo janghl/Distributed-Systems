@@ -40,17 +40,11 @@ bash clean.sh
 ```bash
 bash kill_server.sh
 ```
-# To run the code:
-```
-g++ server.cpp -o a.out -std=c++17 -lstdc++fs
-./a.out
-```
-# To clean all boxes
-```
-
-```
-# To run logging:
-```
-g++ log.cpp -o log.out -std=c++17 -lstdc++fs
-./log.out [maching number + line number]
+# To test
+Expectation is that there is no output, otherwise we are failing asserts and will core dump.
+```bash
+bash start_server.sh
+make test
+./test.out
+bash kill_server.sh
 ```

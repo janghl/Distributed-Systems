@@ -21,8 +21,8 @@ client_debug: client_main.cpp
 behave_debug: behave.cpp
 	$(CXX) $(DEBUGFLAGS) behave.cpp -o behave_debug.out
 
-behave: behave.cpp
-	$(CXX) $(CXXFLAGS) behave.cpp -o behave.out
+test: test.cpp
+	$(CXX) $(CXXFLAGS) test.cpp -o test.out
 
 log: log.cpp
 	$(CXX) $(CXXFLAGS) log.cpp -o log.out
