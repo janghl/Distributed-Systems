@@ -26,6 +26,7 @@ public:
     memset(&hints, 0, sizeof(struct addrinfo));
     hints.ai_family = AF_INET;
     hints.ai_socktype = SOCK_STREAM;
+    hints.ai_flags = AI_PASSIVE;
     int s = getaddrinfo(NULL, "8080", &hints, &result_);
     if (s != 0) {
       fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(s));

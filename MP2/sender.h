@@ -130,6 +130,7 @@ int merge(struct MembershipList* list1, struct MembershipList* list2, int machin
     }
     return 0;
 }
+123
 
 /*  background thread
     open service to others
@@ -190,7 +191,7 @@ int checker(int machine, struct MembershipList* list){
 }
 
 int controller(int machine){
-    struct MembershipList* list = new struct MembershipList[Scale];
+    struct MembershipList[Scale] list;
 
     //initialize my own node_id
     std::string timestamp = std::to_string(((int)time(NULL))%60);
