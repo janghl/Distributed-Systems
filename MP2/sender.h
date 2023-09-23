@@ -170,14 +170,19 @@ int receiver(int machine, struct MembershipList* list){
 
 int checker(int machine, struct MembershipList* list){
     for(int num=0; num<Scale && num!= machine; num++){
-        if(list[num].local_time-list[machine].local_time>=T_fail+T_cleanup){
+        if(list[num].local_time-list[machine].local_time>=T_fail){
             if(suspicion==true){
                 list[num].status = suspected;
-                if(list[num].local_time-list[machine].local_time>=T_fail+T_cleanup+T_suspect)
-                list[num].status = failed;
+                if(list[num].local_time-list[machine].local_time>=T_fail+T_suspect)
+                    list[num].status = failed;
+                if(list[num].local_time-list[machine].local_time>=T_fail+T_suspect+T_cleanup)
+                    list[num].status = "\0";
             }
-            else 
+            else {
                 list[num].status = failed;
+                if(list[num].local_time-list[machine].local_time>=T_fail+T_cleanup)
+                    list[num].status = "\0";
+            }
         }
     }
     if(list[machine].status = suspected)
