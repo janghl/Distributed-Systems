@@ -15,11 +15,13 @@
 #define T_suspect 20
 #define heartbeat_interval 20   //heart rate
 #define Scale 10                //scale of machines
-enum Status {alive, failed, suspected};
-std::mutex mutex;
-bool suspicion = false;
-public struct MembershipList{
-    std::string node_id = "\0";        //ip+port+timestamp
+
+enum Status {alive, failed, suspected}; // enum class
+std::mutex mutex; // shouldn't be in global scope and rename to be specific
+bool suspicion = false; // shouldn't be in global scope
+// 
+public struct MembershipList{ // named wrong MembershipEntry
+    std::string node_id = "\0";        //ip+port+timestamp, membership id can be struct
     int count = 0;
     int local_time = 0;
     enum Status status = alive;
@@ -66,6 +68,11 @@ int sender(int id, struct MembershipList* list){
     generate and update my own heartbeats and local time
     send heartbeats to a random neighbour each 20ms
 */
+// change logic so that 
+// 2 3 4 5 6 7 8 9 10
+// 2 5 8 7 6 4 3 10 9
+// 2n - 1
+// 
 int send_heartbeats(int machine, struct MembershipList* list){
     while(true){
         std::lock_guard<std::mutex> lock(mutex);
@@ -80,6 +87,20 @@ int send_heartbeats(int machine, struct MembershipList* list){
     return 0;
 }
 
+// int main() {
+    Controller controller;
+    MembershipList list1;
+    // specify fields for list1
+    MembershipList list2;
+    // specify fields for list2
+    int status = merge(list1, list2, machine);
+    MemberList expected;
+    // specify fields for expected
+    static_assert(list1 == expected);
+}
+// write unit tests for this
+// 
+// TODO: specify merge in place
 /*  create neighbour's entry;
     detect status change; 
     merging received list to local one;
@@ -158,7 +179,7 @@ int receiver(int machine, struct MembershipList* list){
     while(true){
         char *buffer = new char[Scale * sizeof(struct MembershipList)];
         struct MembershipList* recvlist = new struct MembershipList[Scale];
-        int byte_count = recvfrom(sock_fd, buffer, Scale * sizeof(struct MembershipList),0, &addr, &addrlen);
+        int byte_count = recvfrom(sock_fd, buffer, Scale * sizeof(struct MembershipList),0, &addr, &addrlen); // recv
         if(byte_count > 0)
             std::cout<<"received "<< byte_count<< " bytes successfully!"<<std::endl;
         else
@@ -169,6 +190,7 @@ int receiver(int machine, struct MembershipList* list){
     return 0;
 }
 
+// unit test this too
 int checker(int machine, struct MembershipList* list){
     for(int num=0; num<Scale && num!= machine; num++){
         if(list[num].local_time-list[machine].local_time>=T_fail){
