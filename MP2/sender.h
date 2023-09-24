@@ -10,17 +10,18 @@
 #include <mutex>
 #include <map>
 #include <vector>
+#include "unit_test.h"
 #define T_fail 30
 #define T_cleanup 20
 #define T_suspect 20
 #define heartbeat_interval 20   //heart rate
 #define Scale 10                //scale of machines
 
-enum Status {alive, failed, suspected}; // enum class
+enum class Status {alive, failed, suspected}; // enum class
 std::mutex mutex; // shouldn't be in global scope and rename to be specific
 bool suspicion = false; // shouldn't be in global scope
 // 
-public struct MembershipList{ // named wrong MembershipEntry
+public struct MembershipEntry{ // named wrong MembershipEntry
     std::string node_id = "\0";        //ip+port+timestamp, membership id can be struct
     int count = 0;
     int local_time = 0;
@@ -39,7 +40,7 @@ const static char *hosts[] = {
     usage: target machine number, membership list
 */
 
-int sender(int id, struct MembershipList* list){
+int sender(int id, struct MembershipEntry* list){
     int sock_fd = socket(AF_INET, SOCK_DREAM, IPPROTO_UDP);
     struct addrinfo hints, *infoptr;
     memset(&hints, 0, sizeof(hints));
@@ -54,9 +55,9 @@ int sender(int id, struct MembershipList* list){
         perror("sender cannot connect! target machine number = "+id);
         return 1;
     }
-    char *buffer = new char[Scale * sizeof(struct MembershipList)];
-    std::memcpy(buffer, list, Scale * sizeof(struct MembershipList));
-    if(send(sock_fd, buffer, Scale * sizeof(struct MembershipList), 0) == -1){
+    char *buffer = new char[Scale * sizeof(struct MembershipEntry)];
+    std::memcpy(buffer, list, Scale * sizeof(struct MembershipEntry));
+    if(send(sock_fd, buffer, Scale * sizeof(struct MembershipEntry), 0) == -1){
         perror("sender cannot send to machine "+id);
         return 1;
     }
@@ -73,7 +74,7 @@ int sender(int id, struct MembershipList* list){
 // 2 5 8 7 6 4 3 10 9
 // 2n - 1
 // 
-int send_heartbeats(int machine, struct MembershipList* list){
+int send_heartbeats(int machine, struct MembershipEntry* list){
     while(true){
         std::lock_guard<std::mutex> lock(mutex);
         list[machine].count++;
@@ -87,26 +88,16 @@ int send_heartbeats(int machine, struct MembershipList* list){
     return 0;
 }
 
-// int main() {
-    Controller controller;
-    MembershipList list1;
-    // specify fields for list1
-    MembershipList list2;
-    // specify fields for list2
-    int status = merge(list1, list2, machine);
-    MemberList expected;
-    // specify fields for expected
-    static_assert(list1 == expected);
-}
+
 // write unit tests for this
 // 
-// TODO: specify merge in place
+// TODO: specify merge in place, use const static
 /*  create neighbour's entry;
     detect status change; 
     merging received list to local one;
     usage: local membership list, received membership list, machine number
 */
-int merge(struct MembershipList* list1, struct MembershipList* list2, int machine){
+int merge(struct MembershipEntry* list1, struct MembershipEntry* list2, int machine){
     std::lock_guard<std::mutex> lock(mutex);
     for(int num=0; num<Scale && num!= machine; num++){
         if(list1[num].node_id=="\0" && list2[num].node_id!="\0"){
@@ -115,7 +106,7 @@ int merge(struct MembershipList* list1, struct MembershipList* list2, int machin
             list1[num].local_time = list1[machine].local_time;
             std::cout<< "create new entry "<<num<<std::endl;
         }
-        if(suspicion == false){
+        else if(suspicion == false){
             if(list2[num].status!=alive && list1[num].status==alive){
         list1[num].status = list2[num].status;
         std::cout<< "machine "<<num<<" status changed to "<<list1[num].status<<std::endl;
@@ -124,6 +115,7 @@ int merge(struct MembershipList* list1, struct MembershipList* list2, int machin
         list1[num].count = list2[num].count;
         list1[num].local_time = list2[machine].local_time;
         std::cout<< "updated entry "<<num<<" on machine "<<machine<<std::endl;
+        }
         }
         else
         {
@@ -145,20 +137,20 @@ int merge(struct MembershipList* list1, struct MembershipList* list2, int machin
 
             }
 
-        }
+        
         }
         
     }
     return 0;
 }
-123
+
 
 /*  background thread
     open service to others
     modify my own list when receiving a package
     return 0 if succeeded, return 1 if failed
 */
-int receiver(int machine, struct MembershipList* list){
+int receiver(int machine, struct MembershipEntry* list){
     int sock_fd = socket(AF_INET, SOCK_DREAM, IPPROTO_UDP);
     struct addrinfo hints, *infoptr;
     hints.ai_family = AF_INET;
@@ -177,21 +169,21 @@ int receiver(int machine, struct MembershipList* list){
     struct sockaddr_storage addr;
     int addrlen = sizeof(addr);
     while(true){
-        char *buffer = new char[Scale * sizeof(struct MembershipList)];
-        struct MembershipList* recvlist = new struct MembershipList[Scale];
-        int byte_count = recvfrom(sock_fd, buffer, Scale * sizeof(struct MembershipList),0, &addr, &addrlen); // recv
+        char *buffer = new char[Scale * sizeof(struct MembershipEntry)];
+        struct MembershipEntry* recvlist = new struct MembershipEntry[Scale];
+        int byte_count = recvfrom(sock_fd, buffer, Scale * sizeof(struct MembershipEntry),0, &addr, &addrlen); // recv
         if(byte_count > 0)
             std::cout<<"received "<< byte_count<< " bytes successfully!"<<std::endl;
         else
             std::cout<<"receive failed!"<<std::endl;
-        std::memcpy(recvlist, buffer, Scale * sizeof(struct MembershipList));
+        std::memcpy(recvlist, buffer, Scale * sizeof(struct MembershipEntry));
         merge(list, recvlist, machine);
     }
     return 0;
 }
 
 // unit test this too
-int checker(int machine, struct MembershipList* list){
+int checker(int machine, struct MembershipEntry* list){
     for(int num=0; num<Scale && num!= machine; num++){
         if(list[num].local_time-list[machine].local_time>=T_fail){
             if(suspicion==true){
@@ -199,12 +191,12 @@ int checker(int machine, struct MembershipList* list){
                 if(list[num].local_time-list[machine].local_time>=T_fail+T_suspect)
                     list[num].status = failed;
                 if(list[num].local_time-list[machine].local_time>=T_fail+T_suspect+T_cleanup)
-                    list[num].status = "\0";
+                    erase[num];
             }
             else {
                 list[num].status = failed;
                 if(list[num].local_time-list[machine].local_time>=T_fail+T_cleanup)
-                    list[num].status = "\0";
+                    vector[num].push;
             }
         }
     }
@@ -213,7 +205,7 @@ int checker(int machine, struct MembershipList* list){
 }
 
 int controller(int machine){
-    struct MembershipList[Scale] list;
+    struct MembershipEntry[Scale] list;
 
     //initialize my own node_id
     std::string timestamp = std::to_string(((int)time(NULL))%60);
