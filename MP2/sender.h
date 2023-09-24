@@ -34,9 +34,15 @@ public:
 private:
   void Log(const std::string& message) {
     std::ofstream log_file;
+    log_mtx_.lock();
     log_file.open("mp2.log", std::ios::app);
     // append to file new line
+    log_file << message << std::endl;
+    log_file.close();
+    log_mtx_.unlock();
+    return;
   }
+
   void Join() {
     auto time = std::chrono::system_clock::now();
     time_stamp_ = time.time_since_epoch().count();
@@ -61,6 +67,7 @@ private:
       return;
     }
     // send gossip to a few about leaving
+    list_mtx_.unlock();
   }
   void List() {
     std::cout << "Membership List on host " + host_ << std::endl;
@@ -150,6 +157,7 @@ private:
   const int kHeartbeatInterval = 20;
   const int kScale = 10;
   std::mutex list_mtx_;
+  std::mutex log_mtx_;
   std::map<NodeId, MembershipEntry> membership_list_;
   bool using_suspicion_;
   int machine_;
@@ -242,13 +250,14 @@ int sender(int id, struct MembershipEntry* list){
 // 
 int send_heartbeats(int machine, struct MembershipEntry* list){
     while(true){
-        std::lock_guard<std::mutex> lock(mutex);
+        list_mtx_.lock();
         list[machine].count++;
         list[machine].local_time++;
         srand (time(NULL));
         int target;
         while(machine == (target = rand()%10+1));
         sender(target, list);
+        list_mtx_.unlock();
         std::this_thread::sleep_for(std::chrono::milliseconds(heartbeat_interval));
     }
     return 0;
@@ -265,7 +274,6 @@ int send_heartbeats(int machine, struct MembershipEntry* list){
 */
 int merge(struct MembershipList *list1, struct MembershipList *list2,
           int machine) {
-  std::lock_guard<std::mutex> lock(mutex);
   for (int num = 0; num < Scale && num != machine; num++) {
     if (list1[num].node_id == "\0" && list2[num].node_id != "\0") {
       list1[num].status = list2[num].status;
@@ -339,7 +347,9 @@ int receiver(int machine, struct MembershipEntry* list){
         else
             std::cout<<"receive failed!"<<std::endl;
         std::memcpy(recvlist, buffer, Scale * sizeof(struct MembershipEntry));
+        list_mtx_.lock();
         merge(list, recvlist, machine);
+        list_mtx_.unlock();
     }
     return 0;
 }
