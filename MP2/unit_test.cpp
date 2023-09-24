@@ -1,4 +1,11 @@
-const int check_merge() {
+#include "sender.h"
+
+int main(int argc, char** argv){
+    if(argc!=2)
+        std::cout << "wrong parameter!" << std::endl 
+        << "usage: machine number";
+    Controller controller;
+    controller.controller(argv[1]);
     Controller controller;
     membership_list_ list1;
     // specify fields for list1
@@ -275,5 +282,6 @@ const int check_checker() {
     expentry3.status=kFalied;
     static_assert(list==explist);
 
+    return 0;
     
 }
