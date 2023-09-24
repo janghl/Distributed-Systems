@@ -8,5 +8,8 @@ gossip: gossip.cpp
 gossip_debug: gossip.cpp
 	$(CXX) $(DEBUGFLAGS) gossip.cpp -o gossip_debug.out
 
+unit_test: unit_test.cpp	
+	$(CXX) $(CXXFLAGS) -O3 unit_test.cpp -o unit_test.out
+
 clean: 
 	rm *.log *.temp
