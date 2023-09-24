@@ -46,6 +46,7 @@ private:
   void Join() {
     auto time = std::chrono::system_clock::now();
     time_stamp_ = time.time_since_epoch().count();
+    self_node_{host_, port_, time_stamp_};
     NodeId node_id{host_, port_, time_stamp_};
     list_mtx_.lock();
     membership_list_.try_emplace(node_id, 0, 0, Status::kAlive);
@@ -190,6 +191,7 @@ private:
   std::string host_;
   std::string port_;
   long time_stamp_;
+  NodeId self_node_;
   int sock_fd_;
   bool is_introducer_;
   int Receiver(int machine, struct MembershipEntry *list) {
@@ -231,7 +233,8 @@ private:
         std::string rest;
         std::getline(ss, rest);
         std::map<NodeId, MembershipEntry> other_list = StringToList(rest);
-
+        // do we need machine here?
+        merge(other_list, machine);
       } else {
         std::string host;
         std::string port;
@@ -455,7 +458,9 @@ int send_heartbeats(int machine, struct MembershipEntry* list){
   */
 
   // unit test this too
-  int checker(int machine, struct MembershipEntry *list) {
+  int checker() {
+    NodeId self{host_, port_, time_stamp_};
+    membership_list_[self].local_time
     for (int num = 0; num < Scale && num != machine; num++) {
       if (list[num].local_time - list[machine].local_time >= T_fail) {
         if (suspicion == true) {
