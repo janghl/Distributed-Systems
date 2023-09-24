@@ -234,7 +234,7 @@ private:
         std::getline(ss, rest);
         std::map<NodeId, MembershipEntry> other_list = StringToList(rest);
         // do we need machine here?
-        merge(other_list, machine);
+        merge(other_list);
       } else {
         std::string host;
         std::string port;
@@ -279,50 +279,50 @@ private:
       else
         std::cout << "receive failed!" << std::endl;
       std::memcpy(recvlist, buffer, Scale * sizeof(struct MembershipEntry));
-      merge(list, recvlist, machine);
+      merge(recvlist);
     }
     return 0;
   }
   // membership_list_: list1, other: list2
-  int merge(const std::map<NodeId, MembershipEntry> &other,
-            int machine) {
-    std::lock_guard<std::mutex> lock(mutex);
-    for (int num = 0; num < Scale && num != machine; num++) {
-      if (list1[num].node_id == "\0" && list2[num].node_id != "\0") {
-        list1[num].status = list2[num].status;
-        list1[num].count = list2[num].count;
-        list1[num].local_time = list1[machine].local_time;
-        std::cout << "create new entry " << num << std::endl;
-      }
-      if (suspicion == false) {
-        if (list2[num].status != alive && list1[num].status == alive) {
-          list1[num].status = list2[num].status;
-          std::cout << "machine " << num << " status changed to "
-                    << list1[num].status << std::endl;
-        } else if (list2[num].count > list1[num].count) {
-          list1[num].count = list2[num].count;
-          list1[num].local_time = list2[machine].local_time;
-          std::cout << "updated entry " << num << " on machine " << machine
-                    << std::endl;
-        } else {
-          if (list2[num].status == failed || list1[num].status == failed) {
-            list1[num].status = list2[num].status = failed;
-            std::cout << "machine " << num << " has failed!" << std::endl;
-          } else {
-            if (list2[num].count > list1[num].count) {
-              list1[num].count = list2[num].count;
-              list1[num].local_time = list2[machine].local_time;
-              std::cout << "updated entry " << num << " on machine " << machine
-                        << std::endl;
-            }
-            if (list2[num].status != list1[num].status) {
-              list1[num].status = list2[num].status;
-              std::cout << "machine " << num << " status changed to "
-                        << list1[num].status << std::endl;
-            }
-          }
+  int merge(const std::map<NodeId, MembershipEntry> &other) {
+    for(auto &iter: other)
+      if(iter->first!=self) {
+        if (membership_list_.find(iter) == membership_list_.end()) {
+            membership_list_[iter->first] = iter->second;
+            membership_list_[iter->first].local_time = membership_list_[self].local_time;
+            std::cout << "create new entry " << iter->first.host << std::endl;
         }
-      }
+        else if (suspicion == false) {
+            if (iter->second.status != kAlive && membership_list_[iter->first].status == kAlive) {
+            membership_list_[iter->first].status = iter->second.status;
+            std::cout << "machine " << iter->first.host << " status changed to "
+                        << membership_list_[iter->first].status << std::endl;
+            } else if (iter->second.count > membership_list_[iter->first].count) {
+            membership_list_[iter->first].count = iter->second.count;
+            membership_list_[iter->first].local_time = membership_list_[self].local_time;
+            std::cout << "updated entry " << iter->first.host << " on machine " << self.host
+                        << std::endl;
+            } 
+        }
+        else {
+            if (iter->second.status == kFailed || membership_list_[iter->first].status == kFailed) {
+                iter->second.status = membership_list_[iter->first].status = failed;
+                std::cout << "machine " << iter->first.host << " has failed!" << std::endl;
+            } 
+            else {
+                if (iter->second.count > membership_list_[iter->first].count) {
+                membership_list_[iter->first].count = iter->second.count;
+                membership_list_[iter->first].local_time = membership_list_[self].local_time;
+                std::cout << "updated entry " << iter->first.host << " on machine " << self.host
+                            << std::endl;
+                }
+                if (iter->second.status != membership_list_[iter->first].status) {
+                membership_list_[iter->first].status = iter->second.status;
+                std::cout << "machine " << iter->first.host << " status changed to "
+                            << iter->second.status << std::endl;
+                }
+            }
+        }
     }
     return 0;
   }
@@ -458,19 +458,27 @@ int send_heartbeats(int machine, struct MembershipEntry* list){
   */
 
   // unit test this too
-  int checker() {
-    NodeId self{host_, port_, time_stamp_};
-    membership_list_[self].local_time
-    for (int num = 0; num < Scale && num != machine; num++) {
-      if (list[num].local_time - list[machine].local_time >= T_fail) {
-        if (suspicion == true) {
-          list[num].status = suspected;
-          if (list[num].local_time - list[machine].local_time >=
-              T_fail + T_suspect)
-            list[num].status = failed;
-          if (list[num].local_time - list[machine].local_time >=
-              T_fail + T_suspect + T_cleanup)
-            erase[num];
+int checker(){
+    for(auto &iter: membership_list_)
+      if(iter->first!=self){
+        if(iter->second.local_time-membership_list_[self].local_time>=kTFail){
+            if(suspicion==true){
+                iter->second.local_time.status = kSuspected;
+                if(iter->second.local_time-membership_list_[self].local_time>=kTFail+kTSuspect)
+                    iter->second.status = kFailed;
+                if(iter->second.local_time-membership_list_[self].local_time>=kTFail+kTSuspect+kTCleanup)
+                    membership_list_.erase(iter);
+            }
+            else {
+                iter->second.status = kFailed;
+                if(iter->second.local_time-membership_list_[self].local_time>=kTFail+kTCleanup)
+                    membership_list_.erase(iter);
+            }
+        }
+    }
+    if (membership_list_[self].status = kSuspected)
+      membership_list_[self].status = kAlive;
+  }
 // write unit tests for this
 // 
 // TODO: specify merge in place, use const static
@@ -479,54 +487,6 @@ int send_heartbeats(int machine, struct MembershipEntry* list){
     merging received list to local one;
     usage: local membership list, received membership list, machine number
 */
-int merge(struct MembershipList *list1, struct MembershipList *list2,
-          int machine) {
-  for (int num = 0; num < Scale && num != machine; num++) {
-    if (list1[num].node_id == "\0" && list2[num].node_id != "\0") {
-      list1[num].status = list2[num].status;
-      list1[num].count = list2[num].count;
-      list1[num].local_time = list1[machine].local_time;
-      std::cout << "create new entry " << num << std::endl;
-    }
-    if (suspicion == false) {
-      if (list2[num].status != alive && list1[num].status == alive) {
-        list1[num].status = list2[num].status;
-        std::cout << "machine " << num << " status changed to "
-                  << list1[num].status << std::endl;
-      } else if (list2[num].count > list1[num].count) {
-        list1[num].count = list2[num].count;
-        list1[num].local_time = list2[machine].local_time;
-        std::cout << "updated entry " << num << " on machine " << machine
-                  << std::endl;
-      } else {
-        if (list2[num].status == failed || list1[num].status == failed) {
-          list1[num].status = list2[num].status = failed;
-          std::cout << "machine " << num << " has failed!" << std::endl;
-        } else {
-          list[num].status = failed;
-          if (list[num].local_time - list[machine].local_time >=
-              T_fail + T_cleanup)
-            vector[num].push;
-        }
-      }
-          if (list2[num].count > list1[num].count) {
-            list1[num].count = list2[num].count;
-            list1[num].local_time = list2[machine].local_time;
-            std::cout << "updated entry " << num << " on machine " << machine
-                      << std::endl;
-          }
-          if (list2[num].status != list1[num].status) {
-            list1[num].status = list2[num].status;
-            std::cout << "machine " << num << " status changed to "
-                      << list1[num].status << std::endl;
-          }
-        }
-      }
-    }
-  }
-  return 0;
-}
-
 
 /*  background thread
     open service to others
@@ -561,33 +521,13 @@ int receiver(int machine, struct MembershipEntry* list){
             std::cout<<"receive failed!"<<std::endl;
         std::memcpy(recvlist, buffer, Scale * sizeof(struct MembershipEntry));
         list_mtx_.lock();
-        merge(list, recvlist, machine);
+        merge(recvlist);
         list_mtx_.unlock();
     }
     return 0;
 }
 
-// unit test this too
-int checker(int machine, struct MembershipEntry* list){
-    for(int num=0; num<Scale && num!= machine; num++){
-        if(list[num].local_time-list[machine].local_time>=T_fail){
-            if(suspicion==true){
-                list[num].status = suspected;
-                if(list[num].local_time-list[machine].local_time>=T_fail+T_suspect)
-                    list[num].status = failed;
-                if(list[num].local_time-list[machine].local_time>=T_fail+T_suspect+T_cleanup)
-                    erase[num];
-            }
-            else {
-                list[num].status = failed;
-                if(list[num].local_time-list[machine].local_time>=T_fail+T_cleanup)
-                    vector[num].push;
-            }
-        }
-    }
-    if (list[machine].status = suspected)
-      list[machine].status = alive;
-  }
+
 
   int controller(int machine) {
     struct MembershipEntry[Scale] list;
