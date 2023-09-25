@@ -72,6 +72,8 @@ public:
   std::map<NodeId, MembershipEntry> membership_list_;
 
   void Merge(const std::map<NodeId, MembershipEntry> &other) {
+    Log("Merge lock");
+    list_mtx_.lock();
     for (auto &pair : other)
       if (!(pair.first == self_node_)) {
         if (membership_list_.find(pair.first) == membership_list_.end()) {
@@ -114,6 +116,7 @@ public:
           }
         }
       }
+      list_mtx_.unlock();
   }
 
   void Checker() {
@@ -399,7 +402,7 @@ private:
         std::map<NodeId, MembershipEntry> other_list = StringToList(rest);
         // do we need machine here?
         Merge(other_list);
-      } else {
+      } else if (is_introducer_) {
         std::string host;
         std::string port;
         long time_stamp;
