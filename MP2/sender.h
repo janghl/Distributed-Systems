@@ -175,10 +175,10 @@ private:
       Log("Introducer joined");
     } else {
       Log("Non-introducer joined");
-      std::string message;
-      std::stringstream ss(message);
+      std::stringstream ss;
       ss << "JOIN" << std::endl;
       ss << host_ << port_ << time_stamp_ << std::endl;
+      std::string message = ss.str();
       Log("Sending " + message + " to introducer");
       // Send to introducer host and port
       struct addrinfo hints, *infoptr;
@@ -267,8 +267,7 @@ private:
   std::string ListToString() {
     Log("tostring lock");
     list_mtx_.lock();
-    std::string retval;
-    std::stringstream ss(retval);
+    std::stringstream ss;
     for (const auto &[key, value] : membership_list_) {
       ss << key.host << "," << key.port << "," << key.time_stamp << ","
          << value.count << "," << value.local_time << ","
@@ -277,7 +276,7 @@ private:
     ss << std::endl;
     Log("unlock");
     list_mtx_.unlock();
-    return retval;
+    return ss.str();
   }
   std::unordered_map<std::string, Status> string_to_status_ = {
       {"alive", Status::kAlive},
@@ -416,10 +415,10 @@ private:
         membership_list_[node] = entry;
         Log("unlock");
         list_mtx_.unlock();
-        std::string data;
-        std::stringstream oss(data);
+        std::stringstream oss;
         oss << "DATA" << std::endl;
         oss << ListToString();
+        std::string data = oss.str();
         // Send membership list back to newly joined member
         sendto(sock_fd_, data.c_str(), data.size(), 0,
                (struct sockaddr *)&client_addr, addrlen);
@@ -444,10 +443,10 @@ private:
       Log("unlock");
       list_mtx_.unlock();
       // construct package send to all neighbors
-      std::string datagram;
-      std::stringstream ss(datagram);
+      std::stringstream ss;
       ss << "DATA" << std::endl;
       ss << ListToString() << std::endl;
+      std::string datagram = ss.str();
       std::vector<NodeId> targets = GetTargets();
       for (const NodeId &target : targets) {
         Log("sending datagram");
