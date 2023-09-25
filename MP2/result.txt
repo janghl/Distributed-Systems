@@ -1,0 +1,1062 @@
+g++ -pthread -std=c++17 -O3 unit_test.cpp -o unit_test.out
+In file included from /usr/include/c++/8/string:48,
+                 from /usr/include/c++/8/bits/locale_classes.h:40,
+                 from /usr/include/c++/8/bits/ios_base.h:41,
+                 from /usr/include/c++/8/ios:42,
+                 from /usr/include/c++/8/istream:38,
+                 from /usr/include/c++/8/fstream:38,
+                 from sender.h:9,
+                 from unit_test.cpp:1:
+/usr/include/c++/8/bits/stl_function.h: In instantiation of ‘constexpr bool std::less<_Tp>::operator()(const _Tp&, const _Tp&) const [with _Tp = Controller::NodeId]’:
+/usr/include/c++/8/bits/stl_map.h:497:32:   required from ‘std::map<_Key, _Tp, _Compare, _Alloc>::mapped_type& std::map<_Key, _Tp, _Compare, _Alloc>::operator[](const key_type&) [with _Key = Controller::NodeId; _Tp = Controller::MembershipEntry; _Compare = std::less<Controller::NodeId>; _Alloc = std::allocator<std::pair<const Controller::NodeId, Controller::MembershipEntry> >; std::map<_Key, _Tp, _Compare, _Alloc>::mapped_type = Controller::MembershipEntry; std::map<_Key, _Tp, _Compare, _Alloc>::key_type = Controller::NodeId]’
+sender.h:62:38:   required from here
+/usr/include/c++/8/bits/stl_function.h:386:20: error: no match for ‘operator<’ (operand types are ‘const Controller::NodeId’ and ‘const Controller::NodeId’)
+       { return __x < __y; }
+                ~~~~^~~~~
+In file included from /usr/include/c++/8/utility:70,
+                 from /usr/include/c++/8/algorithm:60,
+                 from sender.h:3,
+                 from unit_test.cpp:1:
+/usr/include/c++/8/bits/stl_pair.h:454:5: note: candidate: ‘template<class _T1, class _T2> constexpr bool std::operator<(const std::pair<_T1, _T2>&, const std::pair<_T1, _T2>&)’
+     operator<(const pair<_T1, _T2>& __x, const pair<_T1, _T2>& __y)
+     ^~~~~~~~
+/usr/include/c++/8/bits/stl_pair.h:454:5: note:   template argument deduction/substitution failed:
+In file included from /usr/include/c++/8/string:48,
+                 from /usr/include/c++/8/bits/locale_classes.h:40,
+                 from /usr/include/c++/8/bits/ios_base.h:41,
+                 from /usr/include/c++/8/ios:42,
+                 from /usr/include/c++/8/istream:38,
+                 from /usr/include/c++/8/fstream:38,
+                 from sender.h:9,
+                 from unit_test.cpp:1:
+/usr/include/c++/8/bits/stl_function.h:386:20: note:   ‘const Controller::NodeId’ is not derived from ‘const std::pair<_T1, _T2>’
+       { return __x < __y; }
+                ~~~~^~~~~
+In file included from /usr/include/c++/8/bits/stl_algobase.h:67,
+                 from /usr/include/c++/8/algorithm:61,
+                 from sender.h:3,
+                 from unit_test.cpp:1:
+/usr/include/c++/8/bits/stl_iterator.h:308:5: note: candidate: ‘template<class _Iterator> constexpr bool std::operator<(const std::reverse_iterator<_Iterator>&, const std::reverse_iterator<_Iterator>&)’
+     operator<(const reverse_iterator<_Iterator>& __x,
+     ^~~~~~~~
+/usr/include/c++/8/bits/stl_iterator.h:308:5: note:   template argument deduction/substitution failed:
+In file included from /usr/include/c++/8/string:48,
+                 from /usr/include/c++/8/bits/locale_classes.h:40,
+                 from /usr/include/c++/8/bits/ios_base.h:41,
+                 from /usr/include/c++/8/ios:42,
+                 from /usr/include/c++/8/istream:38,
+                 from /usr/include/c++/8/fstream:38,
+                 from sender.h:9,
+                 from unit_test.cpp:1:
+/usr/include/c++/8/bits/stl_function.h:386:20: note:   ‘const Controller::NodeId’ is not derived from ‘const std::reverse_iterator<_Iterator>’
+       { return __x < __y; }
+                ~~~~^~~~~
+In file included from /usr/include/c++/8/bits/stl_algobase.h:67,
+                 from /usr/include/c++/8/algorithm:61,
+                 from sender.h:3,
+                 from unit_test.cpp:1:
+/usr/include/c++/8/bits/stl_iterator.h:346:5: note: candidate: ‘template<class _IteratorL, class _IteratorR> constexpr bool std::operator<(const std::reverse_iterator<_Iterator>&, const std::reverse_iterator<_IteratorR>&)’
+     operator<(const reverse_iterator<_IteratorL>& __x,
+     ^~~~~~~~
+/usr/include/c++/8/bits/stl_iterator.h:346:5: note:   template argument deduction/substitution failed:
+In file included from /usr/include/c++/8/string:48,
+                 from /usr/include/c++/8/bits/locale_classes.h:40,
+                 from /usr/include/c++/8/bits/ios_base.h:41,
+                 from /usr/include/c++/8/ios:42,
+                 from /usr/include/c++/8/istream:38,
+                 from /usr/include/c++/8/fstream:38,
+                 from sender.h:9,
+                 from unit_test.cpp:1:
+/usr/include/c++/8/bits/stl_function.h:386:20: note:   ‘const Controller::NodeId’ is not derived from ‘const std::reverse_iterator<_Iterator>’
+       { return __x < __y; }
+                ~~~~^~~~~
+In file included from /usr/include/c++/8/bits/stl_algobase.h:67,
+                 from /usr/include/c++/8/algorithm:61,
+                 from sender.h:3,
+                 from unit_test.cpp:1:
+/usr/include/c++/8/bits/stl_iterator.h:1139:5: note: candidate: ‘template<class _IteratorL, class _IteratorR> constexpr bool std::operator<(const std::move_iterator<_IteratorL>&, const std::move_iterator<_IteratorR>&)’
+     operator<(const move_iterator<_IteratorL>& __x,
+     ^~~~~~~~
+/usr/include/c++/8/bits/stl_iterator.h:1139:5: note:   template argument deduction/substitution failed:
+In file included from /usr/include/c++/8/string:48,
+                 from /usr/include/c++/8/bits/locale_classes.h:40,
+                 from /usr/include/c++/8/bits/ios_base.h:41,
+                 from /usr/include/c++/8/ios:42,
+                 from /usr/include/c++/8/istream:38,
+                 from /usr/include/c++/8/fstream:38,
+                 from sender.h:9,
+                 from unit_test.cpp:1:
+/usr/include/c++/8/bits/stl_function.h:386:20: note:   ‘const Controller::NodeId’ is not derived from ‘const std::move_iterator<_IteratorL>’
+       { return __x < __y; }
+                ~~~~^~~~~
+In file included from /usr/include/c++/8/bits/stl_algobase.h:67,
+                 from /usr/include/c++/8/algorithm:61,
+                 from sender.h:3,
+                 from unit_test.cpp:1:
+/usr/include/c++/8/bits/stl_iterator.h:1145:5: note: candidate: ‘template<class _Iterator> constexpr bool std::operator<(const std::move_iterator<_IteratorL>&, const std::move_iterator<_IteratorL>&)’
+     operator<(const move_iterator<_Iterator>& __x,
+     ^~~~~~~~
+/usr/include/c++/8/bits/stl_iterator.h:1145:5: note:   template argument deduction/substitution failed:
+In file included from /usr/include/c++/8/string:48,
+                 from /usr/include/c++/8/bits/locale_classes.h:40,
+                 from /usr/include/c++/8/bits/ios_base.h:41,
+                 from /usr/include/c++/8/ios:42,
+                 from /usr/include/c++/8/istream:38,
+                 from /usr/include/c++/8/fstream:38,
+                 from sender.h:9,
+                 from unit_test.cpp:1:
+/usr/include/c++/8/bits/stl_function.h:386:20: note:   ‘const Controller::NodeId’ is not derived from ‘const std::move_iterator<_IteratorL>’
+       { return __x < __y; }
+                ~~~~^~~~~
+In file included from /usr/include/c++/8/bits/basic_string.h:48,
+                 from /usr/include/c++/8/string:52,
+                 from /usr/include/c++/8/bits/locale_classes.h:40,
+                 from /usr/include/c++/8/bits/ios_base.h:41,
+                 from /usr/include/c++/8/ios:42,
+                 from /usr/include/c++/8/istream:38,
+                 from /usr/include/c++/8/fstream:38,
+                 from sender.h:9,
+                 from unit_test.cpp:1:
+/usr/include/c++/8/string_view:469:5: note: candidate: ‘template<class _CharT, class _Traits> constexpr bool std::operator<(std::basic_string_view<_CharT, _Traits>, std::basic_string_view<_CharT, _Traits>)’
+     operator< (basic_string_view<_CharT, _Traits> __x,
+     ^~~~~~~~
+/usr/include/c++/8/string_view:469:5: note:   template argument deduction/substitution failed:
+In file included from /usr/include/c++/8/string:48,
+                 from /usr/include/c++/8/bits/locale_classes.h:40,
+                 from /usr/include/c++/8/bits/ios_base.h:41,
+                 from /usr/include/c++/8/ios:42,
+                 from /usr/include/c++/8/istream:38,
+                 from /usr/include/c++/8/fstream:38,
+                 from sender.h:9,
+                 from unit_test.cpp:1:
+/usr/include/c++/8/bits/stl_function.h:386:20: note:   ‘Controller::NodeId’ is not derived from ‘std::basic_string_view<_CharT, _Traits>’
+       { return __x < __y; }
+                ~~~~^~~~~
+In file included from /usr/include/c++/8/bits/basic_string.h:48,
+                 from /usr/include/c++/8/string:52,
+                 from /usr/include/c++/8/bits/locale_classes.h:40,
+                 from /usr/include/c++/8/bits/ios_base.h:41,
+                 from /usr/include/c++/8/ios:42,
+                 from /usr/include/c++/8/istream:38,
+                 from /usr/include/c++/8/fstream:38,
+                 from sender.h:9,
+                 from unit_test.cpp:1:
+/usr/include/c++/8/string_view:475:5: note: candidate: ‘template<class _CharT, class _Traits> constexpr bool std::operator<(std::basic_string_view<_CharT, _Traits>, std::__detail::__idt<std::basic_string_view<_CharT, _Traits> >)’
+     operator< (basic_string_view<_CharT, _Traits> __x,
+     ^~~~~~~~
+/usr/include/c++/8/string_view:475:5: note:   template argument deduction/substitution failed:
+In file included from /usr/include/c++/8/string:48,
+                 from /usr/include/c++/8/bits/locale_classes.h:40,
+                 from /usr/include/c++/8/bits/ios_base.h:41,
+                 from /usr/include/c++/8/ios:42,
+                 from /usr/include/c++/8/istream:38,
+                 from /usr/include/c++/8/fstream:38,
+                 from sender.h:9,
+                 from unit_test.cpp:1:
+/usr/include/c++/8/bits/stl_function.h:386:20: note:   ‘Controller::NodeId’ is not derived from ‘std::basic_string_view<_CharT, _Traits>’
+       { return __x < __y; }
+                ~~~~^~~~~
+In file included from /usr/include/c++/8/bits/basic_string.h:48,
+                 from /usr/include/c++/8/string:52,
+                 from /usr/include/c++/8/bits/locale_classes.h:40,
+                 from /usr/include/c++/8/bits/ios_base.h:41,
+                 from /usr/include/c++/8/ios:42,
+                 from /usr/include/c++/8/istream:38,
+                 from /usr/include/c++/8/fstream:38,
+                 from sender.h:9,
+                 from unit_test.cpp:1:
+/usr/include/c++/8/string_view:481:5: note: candidate: ‘template<class _CharT, class _Traits> constexpr bool std::operator<(std::__detail::__idt<std::basic_string_view<_CharT, _Traits> >, std::basic_string_view<_CharT, _Traits>)’
+     operator< (__detail::__idt<basic_string_view<_CharT, _Traits>> __x,
+     ^~~~~~~~
+/usr/include/c++/8/string_view:481:5: note:   template argument deduction/substitution failed:
+In file included from /usr/include/c++/8/string:48,
+                 from /usr/include/c++/8/bits/locale_classes.h:40,
+                 from /usr/include/c++/8/bits/ios_base.h:41,
+                 from /usr/include/c++/8/ios:42,
+                 from /usr/include/c++/8/istream:38,
+                 from /usr/include/c++/8/fstream:38,
+                 from sender.h:9,
+                 from unit_test.cpp:1:
+/usr/include/c++/8/bits/stl_function.h:386:20: note:   ‘Controller::NodeId’ is not derived from ‘std::basic_string_view<_CharT, _Traits>’
+       { return __x < __y; }
+                ~~~~^~~~~
+In file included from /usr/include/c++/8/string:52,
+                 from /usr/include/c++/8/bits/locale_classes.h:40,
+                 from /usr/include/c++/8/bits/ios_base.h:41,
+                 from /usr/include/c++/8/ios:42,
+                 from /usr/include/c++/8/istream:38,
+                 from /usr/include/c++/8/fstream:38,
+                 from sender.h:9,
+                 from unit_test.cpp:1:
+/usr/include/c++/8/bits/basic_string.h:6137:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> bool std::operator<(const std::__cxx11::basic_string<_CharT, _Traits, _Allocator>&, const std::__cxx11::basic_string<_CharT, _Traits, _Allocator>&)’
+     operator<(const basic_string<_CharT, _Traits, _Alloc>& __lhs,
+     ^~~~~~~~
+/usr/include/c++/8/bits/basic_string.h:6137:5: note:   template argument deduction/substitution failed:
+In file included from /usr/include/c++/8/string:48,
+                 from /usr/include/c++/8/bits/locale_classes.h:40,
+                 from /usr/include/c++/8/bits/ios_base.h:41,
+                 from /usr/include/c++/8/ios:42,
+                 from /usr/include/c++/8/istream:38,
+                 from /usr/include/c++/8/fstream:38,
+                 from sender.h:9,
+                 from unit_test.cpp:1:
+/usr/include/c++/8/bits/stl_function.h:386:20: note:   ‘const Controller::NodeId’ is not derived from ‘const std::__cxx11::basic_string<_CharT, _Traits, _Allocator>’
+       { return __x < __y; }
+                ~~~~^~~~~
+In file included from /usr/include/c++/8/string:52,
+                 from /usr/include/c++/8/bits/locale_classes.h:40,
+                 from /usr/include/c++/8/bits/ios_base.h:41,
+                 from /usr/include/c++/8/ios:42,
+                 from /usr/include/c++/8/istream:38,
+                 from /usr/include/c++/8/fstream:38,
+                 from sender.h:9,
+                 from unit_test.cpp:1:
+/usr/include/c++/8/bits/basic_string.h:6150:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> bool std::operator<(const std::__cxx11::basic_string<_CharT, _Traits, _Allocator>&, const _CharT*)’
+     operator<(const basic_string<_CharT, _Traits, _Alloc>& __lhs,
+     ^~~~~~~~
+/usr/include/c++/8/bits/basic_string.h:6150:5: note:   template argument deduction/substitution failed:
+In file included from /usr/include/c++/8/string:48,
+                 from /usr/include/c++/8/bits/locale_classes.h:40,
+                 from /usr/include/c++/8/bits/ios_base.h:41,
+                 from /usr/include/c++/8/ios:42,
+                 from /usr/include/c++/8/istream:38,
+                 from /usr/include/c++/8/fstream:38,
+                 from sender.h:9,
+                 from unit_test.cpp:1:
+/usr/include/c++/8/bits/stl_function.h:386:20: note:   ‘const Controller::NodeId’ is not derived from ‘const std::__cxx11::basic_string<_CharT, _Traits, _Allocator>’
+       { return __x < __y; }
+                ~~~~^~~~~
+In file included from /usr/include/c++/8/string:52,
+                 from /usr/include/c++/8/bits/locale_classes.h:40,
+                 from /usr/include/c++/8/bits/ios_base.h:41,
+                 from /usr/include/c++/8/ios:42,
+                 from /usr/include/c++/8/istream:38,
+                 from /usr/include/c++/8/fstream:38,
+                 from sender.h:9,
+                 from unit_test.cpp:1:
+/usr/include/c++/8/bits/basic_string.h:6162:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> bool std::operator<(const _CharT*, const std::__cxx11::basic_string<_CharT, _Traits, _Allocator>&)’
+     operator<(const _CharT* __lhs,
+     ^~~~~~~~
+/usr/include/c++/8/bits/basic_string.h:6162:5: note:   template argument deduction/substitution failed:
+In file included from /usr/include/c++/8/string:48,
+                 from /usr/include/c++/8/bits/locale_classes.h:40,
+                 from /usr/include/c++/8/bits/ios_base.h:41,
+                 from /usr/include/c++/8/ios:42,
+                 from /usr/include/c++/8/istream:38,
+                 from /usr/include/c++/8/fstream:38,
+                 from sender.h:9,
+                 from unit_test.cpp:1:
+/usr/include/c++/8/bits/stl_function.h:386:20: note:   mismatched types ‘const _CharT*’ and ‘Controller::NodeId’
+       { return __x < __y; }
+                ~~~~^~~~~
+In file included from /usr/include/c++/8/bits/ios_base.h:46,
+                 from /usr/include/c++/8/ios:42,
+                 from /usr/include/c++/8/istream:38,
+                 from /usr/include/c++/8/fstream:38,
+                 from sender.h:9,
+                 from unit_test.cpp:1:
+/usr/include/c++/8/system_error:208:3: note: candidate: ‘bool std::operator<(const std::error_code&, const std::error_code&)’
+   operator<(const error_code& __lhs, const error_code& __rhs) noexcept
+   ^~~~~~~~
+/usr/include/c++/8/system_error:208:3: note:   no known conversion for argument 1 from ‘const Controller::NodeId’ to ‘const std::error_code&’
+/usr/include/c++/8/system_error:282:3: note: candidate: ‘bool std::operator<(const std::error_condition&, const std::error_condition&)’
+   operator<(const error_condition& __lhs,
+   ^~~~~~~~
+/usr/include/c++/8/system_error:282:3: note:   no known conversion for argument 1 from ‘const Controller::NodeId’ to ‘const std::error_condition&’
+In file included from /usr/include/c++/8/bits/node_handle.h:39,
+                 from /usr/include/c++/8/bits/stl_tree.h:72,
+                 from /usr/include/c++/8/map:60,
+                 from sender.h:11,
+                 from unit_test.cpp:1:
+/usr/include/c++/8/optional:1297:5: note: candidate: ‘template<class _Tp, class _Up> constexpr std::__optional_relop_t<decltype ((declval<_Tp>() < declval<_Up>()))> std::operator<(const std::optional<_Tp>&, const std::optional<_Up>&)’
+     operator<(const optional<_Tp>& __lhs, const optional<_Up>& __rhs)
+     ^~~~~~~~
+/usr/include/c++/8/optional:1297:5: note:   template argument deduction/substitution failed:
+In file included from /usr/include/c++/8/string:48,
+                 from /usr/include/c++/8/bits/locale_classes.h:40,
+                 from /usr/include/c++/8/bits/ios_base.h:41,
+                 from /usr/include/c++/8/ios:42,
+                 from /usr/include/c++/8/istream:38,
+                 from /usr/include/c++/8/fstream:38,
+                 from sender.h:9,
+                 from unit_test.cpp:1:
+/usr/include/c++/8/bits/stl_function.h:386:20: note:   ‘const Controller::NodeId’ is not derived from ‘const std::optional<_Tp>’
+       { return __x < __y; }
+                ~~~~^~~~~
+In file included from /usr/include/c++/8/bits/node_handle.h:39,
+                 from /usr/include/c++/8/bits/stl_tree.h:72,
+                 from /usr/include/c++/8/map:60,
+                 from sender.h:11,
+                 from unit_test.cpp:1:
+/usr/include/c++/8/optional:1350:5: note: candidate: ‘template<class _Tp> constexpr bool std::operator<(const std::optional<_Tp>&, std::nullopt_t)’
+     operator<(const optional<_Tp>& /* __lhs */, nullopt_t) noexcept
+     ^~~~~~~~
+/usr/include/c++/8/optional:1350:5: note:   template argument deduction/substitution failed:
+In file included from /usr/include/c++/8/string:48,
+                 from /usr/include/c++/8/bits/locale_classes.h:40,
+                 from /usr/include/c++/8/bits/ios_base.h:41,
+                 from /usr/include/c++/8/ios:42,
+                 from /usr/include/c++/8/istream:38,
+                 from /usr/include/c++/8/fstream:38,
+                 from sender.h:9,
+                 from unit_test.cpp:1:
+/usr/include/c++/8/bits/stl_function.h:386:20: note:   ‘const Controller::NodeId’ is not derived from ‘const std::optional<_Tp>’
+       { return __x < __y; }
+                ~~~~^~~~~
+In file included from /usr/include/c++/8/bits/node_handle.h:39,
+                 from /usr/include/c++/8/bits/stl_tree.h:72,
+                 from /usr/include/c++/8/map:60,
+                 from sender.h:11,
+                 from unit_test.cpp:1:
+/usr/include/c++/8/optional:1355:5: note: candidate: ‘template<class _Tp> constexpr bool std::operator<(std::nullopt_t, const std::optional<_Tp>&)’
+     operator<(nullopt_t, const optional<_Tp>& __rhs) noexcept
+     ^~~~~~~~
+/usr/include/c++/8/optional:1355:5: note:   template argument deduction/substitution failed:
+In file included from /usr/include/c++/8/string:48,
+                 from /usr/include/c++/8/bits/locale_classes.h:40,
+                 from /usr/include/c++/8/bits/ios_base.h:41,
+                 from /usr/include/c++/8/ios:42,
+                 from /usr/include/c++/8/istream:38,
+                 from /usr/include/c++/8/fstream:38,
+                 from sender.h:9,
+                 from unit_test.cpp:1:
+/usr/include/c++/8/bits/stl_function.h:386:20: note:   ‘const Controller::NodeId’ is not derived from ‘const std::optional<_Tp>’
+       { return __x < __y; }
+                ~~~~^~~~~
+In file included from /usr/include/c++/8/bits/node_handle.h:39,
+                 from /usr/include/c++/8/bits/stl_tree.h:72,
+                 from /usr/include/c++/8/map:60,
+                 from sender.h:11,
+                 from unit_test.cpp:1:
+/usr/include/c++/8/optional:1415:5: note: candidate: ‘template<class _Tp, class _Up> constexpr std::__optional_relop_t<decltype ((declval<_Tp>() < declval<_Up>()))> std::operator<(const std::optional<_Tp>&, const _Up&)’
+     operator<(const optional<_Tp>& __lhs, const _Up& __rhs)
+     ^~~~~~~~
+/usr/include/c++/8/optional:1415:5: note:   template argument deduction/substitution failed:
+In file included from /usr/include/c++/8/string:48,
+                 from /usr/include/c++/8/bits/locale_classes.h:40,
+                 from /usr/include/c++/8/bits/ios_base.h:41,
+                 from /usr/include/c++/8/ios:42,
+                 from /usr/include/c++/8/istream:38,
+                 from /usr/include/c++/8/fstream:38,
+                 from sender.h:9,
+                 from unit_test.cpp:1:
+/usr/include/c++/8/bits/stl_function.h:386:20: note:   ‘const Controller::NodeId’ is not derived from ‘const std::optional<_Tp>’
+       { return __x < __y; }
+                ~~~~^~~~~
+In file included from /usr/include/c++/8/bits/node_handle.h:39,
+                 from /usr/include/c++/8/bits/stl_tree.h:72,
+                 from /usr/include/c++/8/map:60,
+                 from sender.h:11,
+                 from unit_test.cpp:1:
+/usr/include/c++/8/optional:1421:5: note: candidate: ‘template<class _Tp, class _Up> constexpr std::__optional_relop_t<decltype ((declval<_Up>() < declval<_Tp>()))> std::operator<(const _Up&, const std::optional<_Tp>&)’
+     operator<(const _Up& __lhs, const optional<_Tp>& __rhs)
+     ^~~~~~~~
+/usr/include/c++/8/optional:1421:5: note:   template argument deduction/substitution failed:
+In file included from /usr/include/c++/8/string:48,
+                 from /usr/include/c++/8/bits/locale_classes.h:40,
+                 from /usr/include/c++/8/bits/ios_base.h:41,
+                 from /usr/include/c++/8/ios:42,
+                 from /usr/include/c++/8/istream:38,
+                 from /usr/include/c++/8/fstream:38,
+                 from sender.h:9,
+                 from unit_test.cpp:1:
+/usr/include/c++/8/bits/stl_function.h:386:20: note:   ‘const Controller::NodeId’ is not derived from ‘const std::optional<_Tp>’
+       { return __x < __y; }
+                ~~~~^~~~~
+In file included from /usr/include/c++/8/map:60,
+                 from sender.h:11,
+                 from unit_test.cpp:1:
+/usr/include/c++/8/bits/stl_tree.h:1566:5: note: candidate: ‘template<class _Key, class _Val, class _KeyOfValue, class _Compare, class _Alloc> bool std::operator<(const std::_Rb_tree<_Key, _Val, _KeyOfValue, _Compare, _Alloc>&, const std::_Rb_tree<_Key, _Val, _KeyOfValue, _Compare, _Alloc>&)’
+     operator<(const _Rb_tree<_Key, _Val, _KeyOfValue, _Compare, _Alloc>& __x,
+     ^~~~~~~~
+/usr/include/c++/8/bits/stl_tree.h:1566:5: note:   template argument deduction/substitution failed:
+In file included from /usr/include/c++/8/string:48,
+                 from /usr/include/c++/8/bits/locale_classes.h:40,
+                 from /usr/include/c++/8/bits/ios_base.h:41,
+                 from /usr/include/c++/8/ios:42,
+                 from /usr/include/c++/8/istream:38,
+                 from /usr/include/c++/8/fstream:38,
+                 from sender.h:9,
+                 from unit_test.cpp:1:
+/usr/include/c++/8/bits/stl_function.h:386:20: note:   ‘const Controller::NodeId’ is not derived from ‘const std::_Rb_tree<_Key, _Val, _KeyOfValue, _Compare, _Alloc>’
+       { return __x < __y; }
+                ~~~~^~~~~
+In file included from /usr/include/c++/8/tuple:39,
+                 from /usr/include/c++/8/bits/stl_map.h:63,
+                 from /usr/include/c++/8/map:61,
+                 from sender.h:11,
+                 from unit_test.cpp:1:
+/usr/include/c++/8/array:262:5: note: candidate: ‘template<class _Tp, long unsigned int _Nm> bool std::operator<(const std::array<_Tp, _Nm>&, const std::array<_Tp, _Nm>&)’
+     operator<(const array<_Tp, _Nm>& __a, const array<_Tp, _Nm>& __b)
+     ^~~~~~~~
+/usr/include/c++/8/array:262:5: note:   template argument deduction/substitution failed:
+In file included from /usr/include/c++/8/string:48,
+                 from /usr/include/c++/8/bits/locale_classes.h:40,
+                 from /usr/include/c++/8/bits/ios_base.h:41,
+                 from /usr/include/c++/8/ios:42,
+                 from /usr/include/c++/8/istream:38,
+                 from /usr/include/c++/8/fstream:38,
+                 from sender.h:9,
+                 from unit_test.cpp:1:
+/usr/include/c++/8/bits/stl_function.h:386:20: note:   ‘const Controller::NodeId’ is not derived from ‘const std::array<_Tp, _Nm>’
+       { return __x < __y; }
+                ~~~~^~~~~
+In file included from /usr/include/c++/8/bits/stl_map.h:63,
+                 from /usr/include/c++/8/map:61,
+                 from sender.h:11,
+                 from unit_test.cpp:1:
+/usr/include/c++/8/tuple:1426:5: note: candidate: ‘template<class ... _TElements, class ... _UElements> constexpr bool std::operator<(const std::tuple<_Tps ...>&, const std::tuple<_Args2 ...>&)’
+     operator<(const tuple<_TElements...>& __t,
+     ^~~~~~~~
+/usr/include/c++/8/tuple:1426:5: note:   template argument deduction/substitution failed:
+In file included from /usr/include/c++/8/string:48,
+                 from /usr/include/c++/8/bits/locale_classes.h:40,
+                 from /usr/include/c++/8/bits/ios_base.h:41,
+                 from /usr/include/c++/8/ios:42,
+                 from /usr/include/c++/8/istream:38,
+                 from /usr/include/c++/8/fstream:38,
+                 from sender.h:9,
+                 from unit_test.cpp:1:
+/usr/include/c++/8/bits/stl_function.h:386:20: note:   ‘const Controller::NodeId’ is not derived from ‘const std::tuple<_Tps ...>’
+       { return __x < __y; }
+                ~~~~^~~~~
+In file included from /usr/include/c++/8/map:61,
+                 from sender.h:11,
+                 from unit_test.cpp:1:
+/usr/include/c++/8/bits/stl_map.h:1451:5: note: candidate: ‘template<class _Key, class _Tp, class _Compare, class _Alloc> bool std::operator<(const std::map<_Key, _Tp, _Compare, _Allocator>&, const std::map<_Key, _Tp, _Compare, _Allocator>&)’
+     operator<(const map<_Key, _Tp, _Compare, _Alloc>& __x,
+     ^~~~~~~~
+/usr/include/c++/8/bits/stl_map.h:1451:5: note:   template argument deduction/substitution failed:
+In file included from /usr/include/c++/8/string:48,
+                 from /usr/include/c++/8/bits/locale_classes.h:40,
+                 from /usr/include/c++/8/bits/ios_base.h:41,
+                 from /usr/include/c++/8/ios:42,
+                 from /usr/include/c++/8/istream:38,
+                 from /usr/include/c++/8/fstream:38,
+                 from sender.h:9,
+                 from unit_test.cpp:1:
+/usr/include/c++/8/bits/stl_function.h:386:20: note:   ‘const Controller::NodeId’ is not derived from ‘const std::map<_Key, _Tp, _Compare, _Allocator>’
+       { return __x < __y; }
+                ~~~~^~~~~
+In file included from /usr/include/c++/8/map:62,
+                 from sender.h:11,
+                 from unit_test.cpp:1:
+/usr/include/c++/8/bits/stl_multimap.h:1115:5: note: candidate: ‘template<class _Key, class _Tp, class _Compare, class _Alloc> bool std::operator<(const std::multimap<_Key, _Tp, _Compare, _Allocator>&, const std::multimap<_Key, _Tp, _Compare, _Allocator>&)’
+     operator<(const multimap<_Key, _Tp, _Compare, _Alloc>& __x,
+     ^~~~~~~~
+/usr/include/c++/8/bits/stl_multimap.h:1115:5: note:   template argument deduction/substitution failed:
+In file included from /usr/include/c++/8/string:48,
+                 from /usr/include/c++/8/bits/locale_classes.h:40,
+                 from /usr/include/c++/8/bits/ios_base.h:41,
+                 from /usr/include/c++/8/ios:42,
+                 from /usr/include/c++/8/istream:38,
+                 from /usr/include/c++/8/fstream:38,
+                 from sender.h:9,
+                 from unit_test.cpp:1:
+/usr/include/c++/8/bits/stl_function.h:386:20: note:   ‘const Controller::NodeId’ is not derived from ‘const std::multimap<_Key, _Tp, _Compare, _Allocator>’
+       { return __x < __y; }
+                ~~~~^~~~~
+In file included from /usr/include/c++/8/memory:80,
+                 from /usr/include/c++/8/thread:39,
+                 from sender.h:17,
+                 from unit_test.cpp:1:
+/usr/include/c++/8/bits/unique_ptr.h:727:5: note: candidate: ‘template<class _Tp, class _Dp, class _Up, class _Ep> bool std::operator<(const std::unique_ptr<_Tp, _Dp>&, const std::unique_ptr<_Up, _Ep>&)’
+     operator<(const unique_ptr<_Tp, _Dp>& __x,
+     ^~~~~~~~
+/usr/include/c++/8/bits/unique_ptr.h:727:5: note:   template argument deduction/substitution failed:
+In file included from /usr/include/c++/8/string:48,
+                 from /usr/include/c++/8/bits/locale_classes.h:40,
+                 from /usr/include/c++/8/bits/ios_base.h:41,
+                 from /usr/include/c++/8/ios:42,
+                 from /usr/include/c++/8/istream:38,
+                 from /usr/include/c++/8/fstream:38,
+                 from sender.h:9,
+                 from unit_test.cpp:1:
+/usr/include/c++/8/bits/stl_function.h:386:20: note:   ‘const Controller::NodeId’ is not derived from ‘const std::unique_ptr<_Tp, _Dp>’
+       { return __x < __y; }
+                ~~~~^~~~~
+In file included from /usr/include/c++/8/memory:80,
+                 from /usr/include/c++/8/thread:39,
+                 from sender.h:17,
+                 from unit_test.cpp:1:
+/usr/include/c++/8/bits/unique_ptr.h:738:5: note: candidate: ‘template<class _Tp, class _Dp> bool std::operator<(const std::unique_ptr<_Tp, _Dp>&, std::nullptr_t)’
+     operator<(const unique_ptr<_Tp, _Dp>& __x, nullptr_t)
+     ^~~~~~~~
+/usr/include/c++/8/bits/unique_ptr.h:738:5: note:   template argument deduction/substitution failed:
+In file included from /usr/include/c++/8/string:48,
+                 from /usr/include/c++/8/bits/locale_classes.h:40,
+                 from /usr/include/c++/8/bits/ios_base.h:41,
+                 from /usr/include/c++/8/ios:42,
+                 from /usr/include/c++/8/istream:38,
+                 from /usr/include/c++/8/fstream:38,
+                 from sender.h:9,
+                 from unit_test.cpp:1:
+/usr/include/c++/8/bits/stl_function.h:386:20: note:   ‘const Controller::NodeId’ is not derived from ‘const std::unique_ptr<_Tp, _Dp>’
+       { return __x < __y; }
+                ~~~~^~~~~
+In file included from /usr/include/c++/8/memory:80,
+                 from /usr/include/c++/8/thread:39,
+                 from sender.h:17,
+                 from unit_test.cpp:1:
+/usr/include/c++/8/bits/unique_ptr.h:744:5: note: candidate: ‘template<class _Tp, class _Dp> bool std::operator<(std::nullptr_t, const std::unique_ptr<_Tp, _Dp>&)’
+     operator<(nullptr_t, const unique_ptr<_Tp, _Dp>& __x)
+     ^~~~~~~~
+/usr/include/c++/8/bits/unique_ptr.h:744:5: note:   template argument deduction/substitution failed:
+In file included from /usr/include/c++/8/string:48,
+                 from /usr/include/c++/8/bits/locale_classes.h:40,
+                 from /usr/include/c++/8/bits/ios_base.h:41,
+                 from /usr/include/c++/8/ios:42,
+                 from /usr/include/c++/8/istream:38,
+                 from /usr/include/c++/8/fstream:38,
+                 from sender.h:9,
+                 from unit_test.cpp:1:
+/usr/include/c++/8/bits/stl_function.h:386:20: note:   ‘const Controller::NodeId’ is not derived from ‘const std::unique_ptr<_Tp, _Dp>’
+       { return __x < __y; }
+                ~~~~^~~~~
+In file included from /usr/include/c++/8/bits/shared_ptr.h:52,
+                 from /usr/include/c++/8/memory:81,
+                 from /usr/include/c++/8/thread:39,
+                 from sender.h:17,
+                 from unit_test.cpp:1:
+/usr/include/c++/8/bits/shared_ptr_base.h:1442:5: note: candidate: ‘template<class _Tp, class _Up, __gnu_cxx::_Lock_policy _Lp> bool std::operator<(const std::__shared_ptr<_Tp1, _Lp>&, const std::__shared_ptr<_Tp2, _Lp>&)’
+     operator<(const __shared_ptr<_Tp, _Lp>& __a,
+     ^~~~~~~~
+/usr/include/c++/8/bits/shared_ptr_base.h:1442:5: note:   template argument deduction/substitution failed:
+In file included from /usr/include/c++/8/string:48,
+                 from /usr/include/c++/8/bits/locale_classes.h:40,
+                 from /usr/include/c++/8/bits/ios_base.h:41,
+                 from /usr/include/c++/8/ios:42,
+                 from /usr/include/c++/8/istream:38,
+                 from /usr/include/c++/8/fstream:38,
+                 from sender.h:9,
+                 from unit_test.cpp:1:
+/usr/include/c++/8/bits/stl_function.h:386:20: note:   ‘const Controller::NodeId’ is not derived from ‘const std::__shared_ptr<_Tp1, _Lp>’
+       { return __x < __y; }
+                ~~~~^~~~~
+In file included from /usr/include/c++/8/bits/shared_ptr.h:52,
+                 from /usr/include/c++/8/memory:81,
+                 from /usr/include/c++/8/thread:39,
+                 from sender.h:17,
+                 from unit_test.cpp:1:
+/usr/include/c++/8/bits/shared_ptr_base.h:1453:5: note: candidate: ‘template<class _Tp, __gnu_cxx::_Lock_policy _Lp> bool std::operator<(const std::__shared_ptr<_Tp, _Lp>&, std::nullptr_t)’
+     operator<(const __shared_ptr<_Tp, _Lp>& __a, nullptr_t) noexcept
+     ^~~~~~~~
+/usr/include/c++/8/bits/shared_ptr_base.h:1453:5: note:   template argument deduction/substitution failed:
+In file included from /usr/include/c++/8/string:48,
+                 from /usr/include/c++/8/bits/locale_classes.h:40,
+                 from /usr/include/c++/8/bits/ios_base.h:41,
+                 from /usr/include/c++/8/ios:42,
+                 from /usr/include/c++/8/istream:38,
+                 from /usr/include/c++/8/fstream:38,
+                 from sender.h:9,
+                 from unit_test.cpp:1:
+/usr/include/c++/8/bits/stl_function.h:386:20: note:   ‘const Controller::NodeId’ is not derived from ‘const std::__shared_ptr<_Tp, _Lp>’
+       { return __x < __y; }
+                ~~~~^~~~~
+In file included from /usr/include/c++/8/bits/shared_ptr.h:52,
+                 from /usr/include/c++/8/memory:81,
+                 from /usr/include/c++/8/thread:39,
+                 from sender.h:17,
+                 from unit_test.cpp:1:
+/usr/include/c++/8/bits/shared_ptr_base.h:1461:5: note: candidate: ‘template<class _Tp, __gnu_cxx::_Lock_policy _Lp> bool std::operator<(std::nullptr_t, const std::__shared_ptr<_Tp, _Lp>&)’
+     operator<(nullptr_t, const __shared_ptr<_Tp, _Lp>& __a) noexcept
+     ^~~~~~~~
+/usr/include/c++/8/bits/shared_ptr_base.h:1461:5: note:   template argument deduction/substitution failed:
+In file included from /usr/include/c++/8/string:48,
+                 from /usr/include/c++/8/bits/locale_classes.h:40,
+                 from /usr/include/c++/8/bits/ios_base.h:41,
+                 from /usr/include/c++/8/ios:42,
+                 from /usr/include/c++/8/istream:38,
+                 from /usr/include/c++/8/fstream:38,
+                 from sender.h:9,
+                 from unit_test.cpp:1:
+/usr/include/c++/8/bits/stl_function.h:386:20: note:   ‘const Controller::NodeId’ is not derived from ‘const std::__shared_ptr<_Tp, _Lp>’
+       { return __x < __y; }
+                ~~~~^~~~~
+In file included from /usr/include/c++/8/memory:81,
+                 from /usr/include/c++/8/thread:39,
+                 from sender.h:17,
+                 from unit_test.cpp:1:
+/usr/include/c++/8/bits/shared_ptr.h:413:5: note: candidate: ‘template<class _Tp, class _Up> bool std::operator<(const std::shared_ptr<_Tp>&, const std::shared_ptr<_Tp>&)’
+     operator<(const shared_ptr<_Tp>& __a, const shared_ptr<_Up>& __b) noexcept
+     ^~~~~~~~
+/usr/include/c++/8/bits/shared_ptr.h:413:5: note:   template argument deduction/substitution failed:
+In file included from /usr/include/c++/8/string:48,
+                 from /usr/include/c++/8/bits/locale_classes.h:40,
+                 from /usr/include/c++/8/bits/ios_base.h:41,
+                 from /usr/include/c++/8/ios:42,
+                 from /usr/include/c++/8/istream:38,
+                 from /usr/include/c++/8/fstream:38,
+                 from sender.h:9,
+                 from unit_test.cpp:1:
+/usr/include/c++/8/bits/stl_function.h:386:20: note:   ‘const Controller::NodeId’ is not derived from ‘const std::shared_ptr<_Tp>’
+       { return __x < __y; }
+                ~~~~^~~~~
+In file included from /usr/include/c++/8/memory:81,
+                 from /usr/include/c++/8/thread:39,
+                 from sender.h:17,
+                 from unit_test.cpp:1:
+/usr/include/c++/8/bits/shared_ptr.h:423:5: note: candidate: ‘template<class _Tp> bool std::operator<(const std::shared_ptr<_Tp>&, std::nullptr_t)’
+     operator<(const shared_ptr<_Tp>& __a, nullptr_t) noexcept
+     ^~~~~~~~
+/usr/include/c++/8/bits/shared_ptr.h:423:5: note:   template argument deduction/substitution failed:
+In file included from /usr/include/c++/8/string:48,
+                 from /usr/include/c++/8/bits/locale_classes.h:40,
+                 from /usr/include/c++/8/bits/ios_base.h:41,
+                 from /usr/include/c++/8/ios:42,
+                 from /usr/include/c++/8/istream:38,
+                 from /usr/include/c++/8/fstream:38,
+                 from sender.h:9,
+                 from unit_test.cpp:1:
+/usr/include/c++/8/bits/stl_function.h:386:20: note:   ‘const Controller::NodeId’ is not derived from ‘const std::shared_ptr<_Tp>’
+       { return __x < __y; }
+                ~~~~^~~~~
+In file included from /usr/include/c++/8/memory:81,
+                 from /usr/include/c++/8/thread:39,
+                 from sender.h:17,
+                 from unit_test.cpp:1:
+/usr/include/c++/8/bits/shared_ptr.h:431:5: note: candidate: ‘template<class _Tp> bool std::operator<(std::nullptr_t, const std::shared_ptr<_Tp>&)’
+     operator<(nullptr_t, const shared_ptr<_Tp>& __a) noexcept
+     ^~~~~~~~
+/usr/include/c++/8/bits/shared_ptr.h:431:5: note:   template argument deduction/substitution failed:
+In file included from /usr/include/c++/8/string:48,
+                 from /usr/include/c++/8/bits/locale_classes.h:40,
+                 from /usr/include/c++/8/bits/ios_base.h:41,
+                 from /usr/include/c++/8/ios:42,
+                 from /usr/include/c++/8/istream:38,
+                 from /usr/include/c++/8/fstream:38,
+                 from sender.h:9,
+                 from unit_test.cpp:1:
+/usr/include/c++/8/bits/stl_function.h:386:20: note:   ‘const Controller::NodeId’ is not derived from ‘const std::shared_ptr<_Tp>’
+       { return __x < __y; }
+                ~~~~^~~~~
+In file included from sender.h:17,
+                 from unit_test.cpp:1:
+/usr/include/c++/8/thread:291:3: note: candidate: ‘bool std::operator<(std::thread::id, std::thread::id)’
+   operator<(thread::id __x, thread::id __y) noexcept
+   ^~~~~~~~
+/usr/include/c++/8/thread:291:3: note:   no known conversion for argument 1 from ‘const Controller::NodeId’ to ‘std::thread::id’
+In file included from /usr/include/c++/8/vector:64,
+                 from sender.h:22,
+                 from unit_test.cpp:1:
+/usr/include/c++/8/bits/stl_vector.h:1770:5: note: candidate: ‘template<class _Tp, class _Alloc> bool std::operator<(const std::vector<_Tp, _Alloc>&, const std::vector<_Tp, _Alloc>&)’
+     operator<(const vector<_Tp, _Alloc>& __x, const vector<_Tp, _Alloc>& __y)
+     ^~~~~~~~
+/usr/include/c++/8/bits/stl_vector.h:1770:5: note:   template argument deduction/substitution failed:
+In file included from /usr/include/c++/8/string:48,
+                 from /usr/include/c++/8/bits/locale_classes.h:40,
+                 from /usr/include/c++/8/bits/ios_base.h:41,
+                 from /usr/include/c++/8/ios:42,
+                 from /usr/include/c++/8/istream:38,
+                 from /usr/include/c++/8/fstream:38,
+                 from sender.h:9,
+                 from unit_test.cpp:1:
+/usr/include/c++/8/bits/stl_function.h:386:20: note:   ‘const Controller::NodeId’ is not derived from ‘const std::vector<_Tp, _Alloc>’
+       { return __x < __y; }
+                ~~~~^~~~~
+In file included from /usr/include/c++/8/x86_64-redhat-linux/bits/c++allocator.h:33,
+                 from /usr/include/c++/8/bits/allocator.h:46,
+                 from /usr/include/c++/8/string:41,
+                 from /usr/include/c++/8/bits/locale_classes.h:40,
+                 from /usr/include/c++/8/bits/ios_base.h:41,
+                 from /usr/include/c++/8/ios:42,
+                 from /usr/include/c++/8/istream:38,
+                 from /usr/include/c++/8/fstream:38,
+                 from sender.h:9,
+                 from unit_test.cpp:1:
+/usr/include/c++/8/ext/new_allocator.h: In instantiation of ‘void __gnu_cxx::new_allocator<_Tp>::construct(_Up*, _Args&& ...) [with _Up = std::pair<const Controller::NodeId, Controller::MembershipEntry>; _Args = {const std::piecewise_construct_t&, std::tuple<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&, long int&&>, std::tuple<int&&, int&&>, const Controller::Status&}; _Tp = std::_Rb_tree_node<std::pair<const Controller::NodeId, Controller::MembershipEntry> >]’:
+/usr/include/c++/8/bits/alloc_traits.h:475:4:   required from ‘static void std::allocator_traits<std::allocator<_Tp> >::construct(std::allocator_traits<std::allocator<_Tp> >::allocator_type&, _Up*, _Args&& ...) [with _Up = std::pair<const Controller::NodeId, Controller::MembershipEntry>; _Args = {const std::piecewise_construct_t&, std::tuple<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&, long int&&>, std::tuple<int&&, int&&>, const Controller::Status&}; _Tp = std::_Rb_tree_node<std::pair<const Controller::NodeId, Controller::MembershipEntry> >; std::allocator_traits<std::allocator<_Tp> >::allocator_type = std::allocator<std::_Rb_tree_node<std::pair<const Controller::NodeId, Controller::MembershipEntry> > >]’
+/usr/include/c++/8/bits/stl_tree.h:626:32:   required from ‘void std::_Rb_tree<_Key, _Val, _KeyOfValue, _Compare, _Alloc>::_M_construct_node(std::_Rb_tree<_Key, _Val, _KeyOfValue, _Compare, _Alloc>::_Link_type, _Args&& ...) [with _Args = {const std::piecewise_construct_t&, std::tuple<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&, long int&&>, std::tuple<int&&, int&&>, const Controller::Status&}; _Key = Controller::NodeId; _Val = std::pair<const Controller::NodeId, Controller::MembershipEntry>; _KeyOfValue = std::_Select1st<std::pair<const Controller::NodeId, Controller::MembershipEntry> >; _Compare = std::less<Controller::NodeId>; _Alloc = std::allocator<std::pair<const Controller::NodeId, Controller::MembershipEntry> >; std::_Rb_tree<_Key, _Val, _KeyOfValue, _Compare, _Alloc>::_Link_type = std::_Rb_tree_node<std::pair<const Controller::NodeId, Controller::MembershipEntry> >*]’
+/usr/include/c++/8/bits/stl_tree.h:643:4:   required from ‘std::_Rb_tree_node<_Val>* std::_Rb_tree<_Key, _Val, _KeyOfValue, _Compare, _Alloc>::_M_create_node(_Args&& ...) [with _Args = {const std::piecewise_construct_t&, std::tuple<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&, long int&&>, std::tuple<int&&, int&&>, const Controller::Status&}; _Key = Controller::NodeId; _Val = std::pair<const Controller::NodeId, Controller::MembershipEntry>; _KeyOfValue = std::_Select1st<std::pair<const Controller::NodeId, Controller::MembershipEntry> >; _Compare = std::less<Controller::NodeId>; _Alloc = std::allocator<std::pair<const Controller::NodeId, Controller::MembershipEntry> >; std::_Rb_tree<_Key, _Val, _KeyOfValue, _Compare, _Alloc>::_Link_type = std::_Rb_tree_node<std::pair<const Controller::NodeId, Controller::MembershipEntry> >*]’
+/usr/include/c++/8/bits/stl_tree.h:2374:13:   required from ‘std::pair<std::_Rb_tree_iterator<_Val>, bool> std::_Rb_tree<_Key, _Val, _KeyOfValue, _Compare, _Alloc>::_M_emplace_unique(_Args&& ...) [with _Args = {const std::piecewise_construct_t&, std::tuple<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&, long int&&>, std::tuple<int&&, int&&>, const Controller::Status&}; _Key = Controller::NodeId; _Val = std::pair<const Controller::NodeId, Controller::MembershipEntry>; _KeyOfValue = std::_Select1st<std::pair<const Controller::NodeId, Controller::MembershipEntry> >; _Compare = std::less<Controller::NodeId>; _Alloc = std::allocator<std::pair<const Controller::NodeId, Controller::MembershipEntry> >]’
+/usr/include/c++/8/bits/stl_map.h:575:64:   required from ‘std::pair<typename std::_Rb_tree<_Key, std::pair<const _Key, _Tp>, std::_Select1st<std::pair<const _Key, _Tp> >, _Compare, typename __gnu_cxx::__alloc_traits<_Alloc>::rebind<std::pair<const _Key, _Tp> >::other>::iterator, bool> std::map<_Key, _Tp, _Compare, _Alloc>::emplace(_Args&& ...) [with _Args = {const std::piecewise_construct_t&, std::tuple<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&, long int&&>, std::tuple<int&&, int&&>, const Controller::Status&}; _Key = Controller::NodeId; _Tp = Controller::MembershipEntry; _Compare = std::less<Controller::NodeId>; _Alloc = std::allocator<std::pair<const Controller::NodeId, Controller::MembershipEntry> >; typename std::_Rb_tree<_Key, std::pair<const _Key, _Tp>, std::_Select1st<std::pair<const _Key, _Tp> >, _Compare, typename __gnu_cxx::__alloc_traits<_Alloc>::rebind<std::pair<const _Key, _Tp> >::other>::iterator = std::_Rb_tree_iterator<std::pair<const Controller::NodeId, Controller::MembershipEntry> >]’
+sender.h:269:44:   required from here
+/usr/include/c++/8/ext/new_allocator.h:136:4: error: no matching function for call to ‘std::pair<const Controller::NodeId, Controller::MembershipEntry>::pair(const std::piecewise_construct_t&, std::tuple<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&, long int&&>, std::tuple<int&&, int&&>, const Controller::Status&)’
+  { ::new((void *)__p) _Up(std::forward<_Args>(__args)...); }
+    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+In file included from /usr/include/c++/8/utility:70,
+                 from /usr/include/c++/8/algorithm:60,
+                 from sender.h:3,
+                 from unit_test.cpp:1:
+/usr/include/c++/8/bits/stl_pair.h:436:9: note: candidate: ‘template<class ... _Args1, long unsigned int ..._Indexes1, class ... _Args2, long unsigned int ..._Indexes2> std::pair<_T1, _T2>::pair(std::tuple<_Args1 ...>&, std::tuple<_Args2 ...>&, std::_Index_tuple<_Indexes1 ...>, std::_Index_tuple<_Indexes2 ...>)’
+         pair(tuple<_Args1...>&, tuple<_Args2...>&,
+         ^~~~
+/usr/include/c++/8/bits/stl_pair.h:436:9: note:   template argument deduction/substitution failed:
+In file included from /usr/include/c++/8/x86_64-redhat-linux/bits/c++allocator.h:33,
+                 from /usr/include/c++/8/bits/allocator.h:46,
+                 from /usr/include/c++/8/string:41,
+                 from /usr/include/c++/8/bits/locale_classes.h:40,
+                 from /usr/include/c++/8/bits/ios_base.h:41,
+                 from /usr/include/c++/8/ios:42,
+                 from /usr/include/c++/8/istream:38,
+                 from /usr/include/c++/8/fstream:38,
+                 from sender.h:9,
+                 from unit_test.cpp:1:
+/usr/include/c++/8/ext/new_allocator.h:136:4: note:   types ‘std::tuple<_Tps ...>’ and ‘const std::piecewise_construct_t’ have incompatible cv-qualifiers
+  { ::new((void *)__p) _Up(std::forward<_Args>(__args)...); }
+    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+In file included from /usr/include/c++/8/utility:70,
+                 from /usr/include/c++/8/algorithm:60,
+                 from sender.h:3,
+                 from unit_test.cpp:1:
+/usr/include/c++/8/bits/stl_pair.h:375:9: note: candidate: ‘template<class ... _Args1, class ... _Args2> std::pair<_T1, _T2>::pair(std::piecewise_construct_t, std::tuple<_Args1 ...>, std::tuple<_Args2 ...>)’
+         pair(piecewise_construct_t, tuple<_Args1...>, tuple<_Args2...>);
+         ^~~~
+/usr/include/c++/8/bits/stl_pair.h:375:9: note:   template argument deduction/substitution failed:
+In file included from /usr/include/c++/8/x86_64-redhat-linux/bits/c++allocator.h:33,
+                 from /usr/include/c++/8/bits/allocator.h:46,
+                 from /usr/include/c++/8/string:41,
+                 from /usr/include/c++/8/bits/locale_classes.h:40,
+                 from /usr/include/c++/8/bits/ios_base.h:41,
+                 from /usr/include/c++/8/ios:42,
+                 from /usr/include/c++/8/istream:38,
+                 from /usr/include/c++/8/fstream:38,
+                 from sender.h:9,
+                 from unit_test.cpp:1:
+/usr/include/c++/8/ext/new_allocator.h:136:4: note:   candidate expects 3 arguments, 4 provided
+  { ::new((void *)__p) _Up(std::forward<_Args>(__args)...); }
+    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+In file included from /usr/include/c++/8/utility:70,
+                 from /usr/include/c++/8/algorithm:60,
+                 from sender.h:3,
+                 from unit_test.cpp:1:
+/usr/include/c++/8/bits/stl_pair.h:370:21: note: candidate: ‘template<class _U1, class _U2, typename std::enable_if<(std::_PCC<((! std::is_same<const Controller::NodeId, _U1>::value) || (! std::is_same<Controller::MembershipEntry, _U2>::value)), const Controller::NodeId, Controller::MembershipEntry>::_MoveConstructiblePair<_U1, _U2>() && (! std::_PCC<((! std::is_same<const Controller::NodeId, _U1>::value) || (! std::is_same<Controller::MembershipEntry, _U2>::value)), const Controller::NodeId, Controller::MembershipEntry>::_ImplicitlyMoveConvertiblePair<_U1, _U2>())), bool>::type <anonymous> > constexpr std::pair<_T1, _T2>::pair(std::pair<_U1, _U2>&&)’
+  explicit constexpr pair(pair<_U1, _U2>&& __p)
+                     ^~~~
+/usr/include/c++/8/bits/stl_pair.h:370:21: note:   template argument deduction/substitution failed:
+In file included from /usr/include/c++/8/x86_64-redhat-linux/bits/c++allocator.h:33,
+                 from /usr/include/c++/8/bits/allocator.h:46,
+                 from /usr/include/c++/8/string:41,
+                 from /usr/include/c++/8/bits/locale_classes.h:40,
+                 from /usr/include/c++/8/bits/ios_base.h:41,
+                 from /usr/include/c++/8/ios:42,
+                 from /usr/include/c++/8/istream:38,
+                 from /usr/include/c++/8/fstream:38,
+                 from sender.h:9,
+                 from unit_test.cpp:1:
+/usr/include/c++/8/ext/new_allocator.h:136:4: note:   types ‘std::pair<_T1, _T2>’ and ‘const std::piecewise_construct_t’ have incompatible cv-qualifiers
+  { ::new((void *)__p) _Up(std::forward<_Args>(__args)...); }
+    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+In file included from /usr/include/c++/8/utility:70,
+                 from /usr/include/c++/8/algorithm:60,
+                 from sender.h:3,
+                 from unit_test.cpp:1:
+/usr/include/c++/8/bits/stl_pair.h:360:12: note: candidate: ‘template<class _U1, class _U2, typename std::enable_if<(std::_PCC<((! std::is_same<const Controller::NodeId, _U1>::value) || (! std::is_same<Controller::MembershipEntry, _U2>::value)), const Controller::NodeId, Controller::MembershipEntry>::_MoveConstructiblePair<_U1, _U2>() && std::_PCC<((! std::is_same<const Controller::NodeId, _U1>::value) || (! std::is_same<Controller::MembershipEntry, _U2>::value)), const Controller::NodeId, Controller::MembershipEntry>::_ImplicitlyMoveConvertiblePair<_U1, _U2>()), bool>::type <anonymous> > constexpr std::pair<_T1, _T2>::pair(std::pair<_U1, _U2>&&)’
+  constexpr pair(pair<_U1, _U2>&& __p)
+            ^~~~
+/usr/include/c++/8/bits/stl_pair.h:360:12: note:   template argument deduction/substitution failed:
+In file included from /usr/include/c++/8/x86_64-redhat-linux/bits/c++allocator.h:33,
+                 from /usr/include/c++/8/bits/allocator.h:46,
+                 from /usr/include/c++/8/string:41,
+                 from /usr/include/c++/8/bits/locale_classes.h:40,
+                 from /usr/include/c++/8/bits/ios_base.h:41,
+                 from /usr/include/c++/8/ios:42,
+                 from /usr/include/c++/8/istream:38,
+                 from /usr/include/c++/8/fstream:38,
+                 from sender.h:9,
+                 from unit_test.cpp:1:
+/usr/include/c++/8/ext/new_allocator.h:136:4: note:   types ‘std::pair<_T1, _T2>’ and ‘const std::piecewise_construct_t’ have incompatible cv-qualifiers
+  { ::new((void *)__p) _Up(std::forward<_Args>(__args)...); }
+    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+In file included from /usr/include/c++/8/utility:70,
+                 from /usr/include/c++/8/algorithm:60,
+                 from sender.h:3,
+                 from unit_test.cpp:1:
+/usr/include/c++/8/bits/stl_pair.h:350:21: note: candidate: ‘template<class _U1, class _U2, typename std::enable_if<(_MoveConstructiblePair<_U1, _U2>() && (! _ImplicitlyMoveConvertiblePair<_U1, _U2>())), bool>::type <anonymous> > constexpr std::pair<_T1, _T2>::pair(_U1&&, _U2&&)’
+  explicit constexpr pair(_U1&& __x, _U2&& __y)
+                     ^~~~
+/usr/include/c++/8/bits/stl_pair.h:350:21: note:   template argument deduction/substitution failed:
+In file included from /usr/include/c++/8/x86_64-redhat-linux/bits/c++allocator.h:33,
+                 from /usr/include/c++/8/bits/allocator.h:46,
+                 from /usr/include/c++/8/string:41,
+                 from /usr/include/c++/8/bits/locale_classes.h:40,
+                 from /usr/include/c++/8/bits/ios_base.h:41,
+                 from /usr/include/c++/8/ios:42,
+                 from /usr/include/c++/8/istream:38,
+                 from /usr/include/c++/8/fstream:38,
+                 from sender.h:9,
+                 from unit_test.cpp:1:
+/usr/include/c++/8/ext/new_allocator.h:136:4: note:   candidate expects 2 arguments, 4 provided
+  { ::new((void *)__p) _Up(std::forward<_Args>(__args)...); }
+    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+In file included from /usr/include/c++/8/utility:70,
+                 from /usr/include/c++/8/algorithm:60,
+                 from sender.h:3,
+                 from unit_test.cpp:1:
+/usr/include/c++/8/bits/stl_pair.h:341:12: note: candidate: ‘template<class _U1, class _U2, typename std::enable_if<(_MoveConstructiblePair<_U1, _U2>() && _ImplicitlyMoveConvertiblePair<_U1, _U2>()), bool>::type <anonymous> > constexpr std::pair<_T1, _T2>::pair(_U1&&, _U2&&)’
+  constexpr pair(_U1&& __x, _U2&& __y)
+            ^~~~
+/usr/include/c++/8/bits/stl_pair.h:341:12: note:   template argument deduction/substitution failed:
+In file included from /usr/include/c++/8/x86_64-redhat-linux/bits/c++allocator.h:33,
+                 from /usr/include/c++/8/bits/allocator.h:46,
+                 from /usr/include/c++/8/string:41,
+                 from /usr/include/c++/8/bits/locale_classes.h:40,
+                 from /usr/include/c++/8/bits/ios_base.h:41,
+                 from /usr/include/c++/8/ios:42,
+                 from /usr/include/c++/8/istream:38,
+                 from /usr/include/c++/8/fstream:38,
+                 from sender.h:9,
+                 from unit_test.cpp:1:
+/usr/include/c++/8/ext/new_allocator.h:136:4: note:   candidate expects 2 arguments, 4 provided
+  { ::new((void *)__p) _Up(std::forward<_Args>(__args)...); }
+    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+In file included from /usr/include/c++/8/utility:70,
+                 from /usr/include/c++/8/algorithm:60,
+                 from sender.h:3,
+                 from unit_test.cpp:1:
+/usr/include/c++/8/bits/stl_pair.h:332:17: note: candidate: ‘template<class _U2, typename std::enable_if<_CopyMovePair<false, const Controller::NodeId, _U2>(), bool>::type <anonymous> > std::pair<_T1, _T2>::pair(const _T1&, _U2&&)’
+        explicit pair(const _T1& __x, _U2&& __y)
+                 ^~~~
+/usr/include/c++/8/bits/stl_pair.h:332:17: note:   template argument deduction/substitution failed:
+In file included from /usr/include/c++/8/x86_64-redhat-linux/bits/c++allocator.h:33,
+                 from /usr/include/c++/8/bits/allocator.h:46,
+                 from /usr/include/c++/8/string:41,
+                 from /usr/include/c++/8/bits/locale_classes.h:40,
+                 from /usr/include/c++/8/bits/ios_base.h:41,
+                 from /usr/include/c++/8/ios:42,
+                 from /usr/include/c++/8/istream:38,
+                 from /usr/include/c++/8/fstream:38,
+                 from sender.h:9,
+                 from unit_test.cpp:1:
+/usr/include/c++/8/ext/new_allocator.h:136:4: note:   candidate expects 2 arguments, 4 provided
+  { ::new((void *)__p) _Up(std::forward<_Args>(__args)...); }
+    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+In file included from /usr/include/c++/8/utility:70,
+                 from /usr/include/c++/8/algorithm:60,
+                 from sender.h:3,
+                 from unit_test.cpp:1:
+/usr/include/c++/8/bits/stl_pair.h:325:18: note: candidate: ‘template<class _U2, typename std::enable_if<_CopyMovePair<true, const Controller::NodeId, _U2>(), bool>::type <anonymous> > constexpr std::pair<_T1, _T2>::pair(const _T1&, _U2&&)’
+        constexpr pair(const _T1& __x, _U2&& __y)
+                  ^~~~
+/usr/include/c++/8/bits/stl_pair.h:325:18: note:   template argument deduction/substitution failed:
+In file included from /usr/include/c++/8/x86_64-redhat-linux/bits/c++allocator.h:33,
+                 from /usr/include/c++/8/bits/allocator.h:46,
+                 from /usr/include/c++/8/string:41,
+                 from /usr/include/c++/8/bits/locale_classes.h:40,
+                 from /usr/include/c++/8/bits/ios_base.h:41,
+                 from /usr/include/c++/8/ios:42,
+                 from /usr/include/c++/8/istream:38,
+                 from /usr/include/c++/8/fstream:38,
+                 from sender.h:9,
+                 from unit_test.cpp:1:
+/usr/include/c++/8/ext/new_allocator.h:136:4: note:   candidate expects 2 arguments, 4 provided
+  { ::new((void *)__p) _Up(std::forward<_Args>(__args)...); }
+    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+In file included from /usr/include/c++/8/utility:70,
+                 from /usr/include/c++/8/algorithm:60,
+                 from sender.h:3,
+                 from unit_test.cpp:1:
+/usr/include/c++/8/bits/stl_pair.h:318:27: note: candidate: ‘template<class _U1, typename std::enable_if<_MoveCopyPair<false, _U1, Controller::MembershipEntry>(), bool>::type <anonymous> > constexpr std::pair<_T1, _T2>::pair(_U1&&, const _T2&)’
+        explicit constexpr pair(_U1&& __x, const _T2& __y)
+                           ^~~~
+/usr/include/c++/8/bits/stl_pair.h:318:27: note:   template argument deduction/substitution failed:
+In file included from /usr/include/c++/8/x86_64-redhat-linux/bits/c++allocator.h:33,
+                 from /usr/include/c++/8/bits/allocator.h:46,
+                 from /usr/include/c++/8/string:41,
+                 from /usr/include/c++/8/bits/locale_classes.h:40,
+                 from /usr/include/c++/8/bits/ios_base.h:41,
+                 from /usr/include/c++/8/ios:42,
+                 from /usr/include/c++/8/istream:38,
+                 from /usr/include/c++/8/fstream:38,
+                 from sender.h:9,
+                 from unit_test.cpp:1:
+/usr/include/c++/8/ext/new_allocator.h:136:4: note:   candidate expects 2 arguments, 4 provided
+  { ::new((void *)__p) _Up(std::forward<_Args>(__args)...); }
+    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+In file included from /usr/include/c++/8/utility:70,
+                 from /usr/include/c++/8/algorithm:60,
+                 from sender.h:3,
+                 from unit_test.cpp:1:
+/usr/include/c++/8/bits/stl_pair.h:311:18: note: candidate: ‘template<class _U1, typename std::enable_if<_MoveCopyPair<true, _U1, Controller::MembershipEntry>(), bool>::type <anonymous> > constexpr std::pair<_T1, _T2>::pair(_U1&&, const _T2&)’
+        constexpr pair(_U1&& __x, const _T2& __y)
+                  ^~~~
+/usr/include/c++/8/bits/stl_pair.h:311:18: note:   template argument deduction/substitution failed:
+In file included from /usr/include/c++/8/x86_64-redhat-linux/bits/c++allocator.h:33,
+                 from /usr/include/c++/8/bits/allocator.h:46,
+                 from /usr/include/c++/8/string:41,
+                 from /usr/include/c++/8/bits/locale_classes.h:40,
+                 from /usr/include/c++/8/bits/ios_base.h:41,
+                 from /usr/include/c++/8/ios:42,
+                 from /usr/include/c++/8/istream:38,
+                 from /usr/include/c++/8/fstream:38,
+                 from sender.h:9,
+                 from unit_test.cpp:1:
+/usr/include/c++/8/ext/new_allocator.h:136:4: note:   candidate expects 2 arguments, 4 provided
+  { ::new((void *)__p) _Up(std::forward<_Args>(__args)...); }
+    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+In file included from /usr/include/c++/8/utility:70,
+                 from /usr/include/c++/8/algorithm:60,
+                 from sender.h:3,
+                 from unit_test.cpp:1:
+/usr/include/c++/8/bits/stl_pair.h:304:17: note: candidate: ‘std::pair<_T1, _T2>::pair(std::pair<_T1, _T2>&&) [with _T1 = const Controller::NodeId; _T2 = Controller::MembershipEntry]’
+       constexpr pair(pair&&) = default;
+                 ^~~~
+/usr/include/c++/8/bits/stl_pair.h:304:17: note:   candidate expects 1 argument, 4 provided
+/usr/include/c++/8/bits/stl_pair.h:303:17: note: candidate: ‘std::pair<_T1, _T2>::pair(const std::pair<_T1, _T2>&) [with _T1 = const Controller::NodeId; _T2 = Controller::MembershipEntry]’
+       constexpr pair(const pair&) = default;
+                 ^~~~
+/usr/include/c++/8/bits/stl_pair.h:303:17: note:   candidate expects 1 argument, 4 provided
+/usr/include/c++/8/bits/stl_pair.h:300:21: note: candidate: ‘template<class _U1, class _U2, typename std::enable_if<(std::_PCC<((! std::is_same<const Controller::NodeId, _U1>::value) || (! std::is_same<Controller::MembershipEntry, _U2>::value)), const Controller::NodeId, Controller::MembershipEntry>::_ConstructiblePair<_U1, _U2>() && (! std::_PCC<((! std::is_same<const Controller::NodeId, _U1>::value) || (! std::is_same<Controller::MembershipEntry, _U2>::value)), const Controller::NodeId, Controller::MembershipEntry>::_ImplicitlyConvertiblePair<_U1, _U2>())), bool>::type <anonymous> > constexpr std::pair<_T1, _T2>::pair(const std::pair<_U1, _U2>&)’
+  explicit constexpr pair(const pair<_U1, _U2>& __p)
+                     ^~~~
+/usr/include/c++/8/bits/stl_pair.h:300:21: note:   template argument deduction/substitution failed:
+In file included from /usr/include/c++/8/x86_64-redhat-linux/bits/c++allocator.h:33,
+                 from /usr/include/c++/8/bits/allocator.h:46,
+                 from /usr/include/c++/8/string:41,
+                 from /usr/include/c++/8/bits/locale_classes.h:40,
+                 from /usr/include/c++/8/bits/ios_base.h:41,
+                 from /usr/include/c++/8/ios:42,
+                 from /usr/include/c++/8/istream:38,
+                 from /usr/include/c++/8/fstream:38,
+                 from sender.h:9,
+                 from unit_test.cpp:1:
+/usr/include/c++/8/ext/new_allocator.h:136:4: note:   ‘const std::piecewise_construct_t’ is not derived from ‘const std::pair<_T1, _T2>’
+  { ::new((void *)__p) _Up(std::forward<_Args>(__args)...); }
+    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+In file included from /usr/include/c++/8/utility:70,
+                 from /usr/include/c++/8/algorithm:60,
+                 from sender.h:3,
+                 from unit_test.cpp:1:
+/usr/include/c++/8/bits/stl_pair.h:291:19: note: candidate: ‘template<class _U1, class _U2, typename std::enable_if<(std::_PCC<((! std::is_same<const Controller::NodeId, _U1>::value) || (! std::is_same<Controller::MembershipEntry, _U2>::value)), const Controller::NodeId, Controller::MembershipEntry>::_ConstructiblePair<_U1, _U2>() && std::_PCC<((! std::is_same<const Controller::NodeId, _U1>::value) || (! std::is_same<Controller::MembershipEntry, _U2>::value)), const Controller::NodeId, Controller::MembershipEntry>::_ImplicitlyConvertiblePair<_U1, _U2>()), bool>::type <anonymous> > constexpr std::pair<_T1, _T2>::pair(const std::pair<_U1, _U2>&)’
+         constexpr pair(const pair<_U1, _U2>& __p)
+                   ^~~~
+/usr/include/c++/8/bits/stl_pair.h:291:19: note:   template argument deduction/substitution failed:
+In file included from /usr/include/c++/8/x86_64-redhat-linux/bits/c++allocator.h:33,
+                 from /usr/include/c++/8/bits/allocator.h:46,
+                 from /usr/include/c++/8/string:41,
+                 from /usr/include/c++/8/bits/locale_classes.h:40,
+                 from /usr/include/c++/8/bits/ios_base.h:41,
+                 from /usr/include/c++/8/ios:42,
+                 from /usr/include/c++/8/istream:38,
+                 from /usr/include/c++/8/fstream:38,
+                 from sender.h:9,
+                 from unit_test.cpp:1:
+/usr/include/c++/8/ext/new_allocator.h:136:4: note:   ‘const std::piecewise_construct_t’ is not derived from ‘const std::pair<_T1, _T2>’
+  { ::new((void *)__p) _Up(std::forward<_Args>(__args)...); }
+    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+In file included from /usr/include/c++/8/utility:70,
+                 from /usr/include/c++/8/algorithm:60,
+                 from sender.h:3,
+                 from unit_test.cpp:1:
+/usr/include/c++/8/bits/stl_pair.h:269:26: note: candidate: ‘template<class _U1, class _U2, typename std::enable_if<(_ConstructiblePair<_U1, _U2>() && (! _ImplicitlyConvertiblePair<_U1, _U2>())), bool>::type <anonymous> > constexpr std::pair<_T1, _T2>::pair(const _T1&, const _T2&)’
+       explicit constexpr pair(const _T1& __a, const _T2& __b)
+                          ^~~~
+/usr/include/c++/8/bits/stl_pair.h:269:26: note:   template argument deduction/substitution failed:
+In file included from /usr/include/c++/8/x86_64-redhat-linux/bits/c++allocator.h:33,
+                 from /usr/include/c++/8/bits/allocator.h:46,
+                 from /usr/include/c++/8/string:41,
+                 from /usr/include/c++/8/bits/locale_classes.h:40,
+                 from /usr/include/c++/8/bits/ios_base.h:41,
+                 from /usr/include/c++/8/ios:42,
+                 from /usr/include/c++/8/istream:38,
+                 from /usr/include/c++/8/fstream:38,
+                 from sender.h:9,
+                 from unit_test.cpp:1:
+/usr/include/c++/8/ext/new_allocator.h:136:4: note:   candidate expects 2 arguments, 4 provided
+  { ::new((void *)__p) _Up(std::forward<_Args>(__args)...); }
+    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+In file included from /usr/include/c++/8/utility:70,
+                 from /usr/include/c++/8/algorithm:60,
+                 from sender.h:3,
+                 from unit_test.cpp:1:
+/usr/include/c++/8/bits/stl_pair.h:260:17: note: candidate: ‘template<class _U1, class _U2, typename std::enable_if<(_ConstructiblePair<_U1, _U2>() && _ImplicitlyConvertiblePair<_U1, _U2>()), bool>::type <anonymous> > constexpr std::pair<_T1, _T2>::pair(const _T1&, const _T2&)’
+       constexpr pair(const _T1& __a, const _T2& __b)
+                 ^~~~
+/usr/include/c++/8/bits/stl_pair.h:260:17: note:   template argument deduction/substitution failed:
+In file included from /usr/include/c++/8/x86_64-redhat-linux/bits/c++allocator.h:33,
+                 from /usr/include/c++/8/bits/allocator.h:46,
+                 from /usr/include/c++/8/string:41,
+                 from /usr/include/c++/8/bits/locale_classes.h:40,
+                 from /usr/include/c++/8/bits/ios_base.h:41,
+                 from /usr/include/c++/8/ios:42,
+                 from /usr/include/c++/8/istream:38,
+                 from /usr/include/c++/8/fstream:38,
+                 from sender.h:9,
+                 from unit_test.cpp:1:
+/usr/include/c++/8/ext/new_allocator.h:136:4: note:   candidate expects 2 arguments, 4 provided
+  { ::new((void *)__p) _Up(std::forward<_Args>(__args)...); }
+    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+In file included from /usr/include/c++/8/utility:70,
+                 from /usr/include/c++/8/algorithm:60,
+                 from sender.h:3,
+                 from unit_test.cpp:1:
+/usr/include/c++/8/bits/stl_pair.h:242:26: note: candidate: ‘template<class _U1, class _U2, typename std::enable_if<std::__and_<std::is_default_constructible<_Tp>, std::is_default_constructible<_U2>, std::__not_<std::__and_<std::__is_implicitly_default_constructible<_U1>, std::__is_implicitly_default_constructible<_U2> > > >::value, bool>::type <anonymous> > constexpr std::pair<_T1, _T2>::pair()’
+       explicit constexpr pair()
+                          ^~~~
+/usr/include/c++/8/bits/stl_pair.h:242:26: note:   template argument deduction/substitution failed:
+In file included from /usr/include/c++/8/x86_64-redhat-linux/bits/c++allocator.h:33,
+                 from /usr/include/c++/8/bits/allocator.h:46,
+                 from /usr/include/c++/8/string:41,
+                 from /usr/include/c++/8/bits/locale_classes.h:40,
+                 from /usr/include/c++/8/bits/ios_base.h:41,
+                 from /usr/include/c++/8/ios:42,
+                 from /usr/include/c++/8/istream:38,
+                 from /usr/include/c++/8/fstream:38,
+                 from sender.h:9,
+                 from unit_test.cpp:1:
+/usr/include/c++/8/ext/new_allocator.h:136:4: note:   candidate expects 0 arguments, 4 provided
+  { ::new((void *)__p) _Up(std::forward<_Args>(__args)...); }
+    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+In file included from /usr/include/c++/8/utility:70,
+                 from /usr/include/c++/8/algorithm:60,
+                 from sender.h:3,
+                 from unit_test.cpp:1:
+/usr/include/c++/8/bits/stl_pair.h:229:26: note: candidate: ‘template<class _U1, class _U2, typename std::enable_if<std::__and_<std::__is_implicitly_default_constructible<_U1>, std::__is_implicitly_default_constructible<_U2> >::value, bool>::type <anonymous> > constexpr std::pair<_T1, _T2>::pair()’
+       _GLIBCXX_CONSTEXPR pair()
+                          ^~~~
+/usr/include/c++/8/bits/stl_pair.h:229:26: note:   template argument deduction/substitution failed:
+In file included from /usr/include/c++/8/x86_64-redhat-linux/bits/c++allocator.h:33,
+                 from /usr/include/c++/8/bits/allocator.h:46,
+                 from /usr/include/c++/8/string:41,
+                 from /usr/include/c++/8/bits/locale_classes.h:40,
+                 from /usr/include/c++/8/bits/ios_base.h:41,
+                 from /usr/include/c++/8/ios:42,
+                 from /usr/include/c++/8/istream:38,
+                 from /usr/include/c++/8/fstream:38,
+                 from sender.h:9,
+                 from unit_test.cpp:1:
+/usr/include/c++/8/ext/new_allocator.h:136:4: note:   candidate expects 0 arguments, 4 provided
+  { ::new((void *)__p) _Up(std::forward<_Args>(__args)...); }
+    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+In file included from /usr/include/c++/8/bits/stl_map.h:63,
+                 from /usr/include/c++/8/map:61,
+                 from sender.h:11,
+                 from unit_test.cpp:1:
+/usr/include/c++/8/tuple: In instantiation of ‘std::pair<_T1, _T2>::pair(std::tuple<_Args1 ...>&, std::tuple<_Args2 ...>&, std::_Index_tuple<_Indexes1 ...>, std::_Index_tuple<_Indexes2 ...>) [with _Args1 = {std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&, long int&}; long unsigned int ..._Indexes1 = {0, 1, 2}; _Args2 = {int&&, int&&, Controller::Status&&}; long unsigned int ..._Indexes2 = {0, 1, 2}; _T1 = const Controller::NodeId; _T2 = Controller::MembershipEntry]’:
+/usr/include/c++/8/tuple:1657:63:   required from ‘std::pair<_T1, _T2>::pair(std::piecewise_construct_t, std::tuple<_Args1 ...>, std::tuple<_Args2 ...>) [with _Args1 = {std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&, long int&}; _Args2 = {int&&, int&&, Controller::Status&&}; _T1 = const Controller::NodeId; _T2 = Controller::MembershipEntry]’
+/usr/include/c++/8/ext/new_allocator.h:136:4:   required from ‘void __gnu_cxx::new_allocator<_Tp>::construct(_Up*, _Args&& ...) [with _Up = std::pair<const Controller::NodeId, Controller::MembershipEntry>; _Args = {const std::piecewise_construct_t&, std::tuple<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&, long int&>, std::tuple<int&&, int&&, Controller::Status&&>}; _Tp = std::_Rb_tree_node<std::pair<const Controller::NodeId, Controller::MembershipEntry> >]’
+/usr/include/c++/8/bits/alloc_traits.h:475:4:   required from ‘static void std::allocator_traits<std::allocator<_Tp> >::construct(std::allocator_traits<std::allocator<_Tp> >::allocator_type&, _Up*, _Args&& ...) [with _Up = std::pair<const Controller::NodeId, Controller::MembershipEntry>; _Args = {const std::piecewise_construct_t&, std::tuple<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&, long int&>, std::tuple<int&&, int&&, Controller::Status&&>}; _Tp = std::_Rb_tree_node<std::pair<const Controller::NodeId, Controller::MembershipEntry> >; std::allocator_traits<std::allocator<_Tp> >::allocator_type = std::allocator<std::_Rb_tree_node<std::pair<const Controller::NodeId, Controller::MembershipEntry> > >]’
+/usr/include/c++/8/bits/stl_tree.h:626:32:   required from ‘void std::_Rb_tree<_Key, _Val, _KeyOfValue, _Compare, _Alloc>::_M_construct_node(std::_Rb_tree<_Key, _Val, _KeyOfValue, _Compare, _Alloc>::_Link_type, _Args&& ...) [with _Args = {const std::piecewise_construct_t&, std::tuple<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&, long int&>, std::tuple<int&&, int&&, Controller::Status&&>}; _Key = Controller::NodeId; _Val = std::pair<const Controller::NodeId, Controller::MembershipEntry>; _KeyOfValue = std::_Select1st<std::pair<const Controller::NodeId, Controller::MembershipEntry> >; _Compare = std::less<Controller::NodeId>; _Alloc = std::allocator<std::pair<const Controller::NodeId, Controller::MembershipEntry> >; std::_Rb_tree<_Key, _Val, _KeyOfValue, _Compare, _Alloc>::_Link_type = std::_Rb_tree_node<std::pair<const Controller::NodeId, Controller::MembershipEntry> >*]’
+/usr/include/c++/8/bits/stl_tree.h:643:4:   required from ‘std::_Rb_tree_node<_Val>* std::_Rb_tree<_Key, _Val, _KeyOfValue, _Compare, _Alloc>::_M_create_node(_Args&& ...) [with _Args = {const std::piecewise_construct_t&, std::tuple<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&, long int&>, std::tuple<int&&, int&&, Controller::Status&&>}; _Key = Controller::NodeId; _Val = std::pair<const Controller::NodeId, Controller::MembershipEntry>; _KeyOfValue = std::_Select1st<std::pair<const Controller::NodeId, Controller::MembershipEntry> >; _Compare = std::less<Controller::NodeId>; _Alloc = std::allocator<std::pair<const Controller::NodeId, Controller::MembershipEntry> >; std::_Rb_tree<_Key, _Val, _KeyOfValue, _Compare, _Alloc>::_Link_type = std::_Rb_tree_node<std::pair<const Controller::NodeId, Controller::MembershipEntry> >*]’
+/usr/include/c++/8/bits/stl_tree.h:2374:13:   required from ‘std::pair<std::_Rb_tree_iterator<_Val>, bool> std::_Rb_tree<_Key, _Val, _KeyOfValue, _Compare, _Alloc>::_M_emplace_unique(_Args&& ...) [with _Args = {const std::piecewise_construct_t&, std::tuple<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&, long int&>, std::tuple<int&&, int&&, Controller::Status&&>}; _Key = Controller::NodeId; _Val = std::pair<const Controller::NodeId, Controller::MembershipEntry>; _KeyOfValue = std::_Select1st<std::pair<const Controller::NodeId, Controller::MembershipEntry> >; _Compare = std::less<Controller::NodeId>; _Alloc = std::allocator<std::pair<const Controller::NodeId, Controller::MembershipEntry> >]’
+/usr/include/c++/8/bits/stl_map.h:575:64:   required from ‘std::pair<typename std::_Rb_tree<_Key, std::pair<const _Key, _Tp>, std::_Select1st<std::pair<const _Key, _Tp> >, _Compare, typename __gnu_cxx::__alloc_traits<_Alloc>::rebind<std::pair<const _Key, _Tp> >::other>::iterator, bool> std::map<_Key, _Tp, _Compare, _Alloc>::emplace(_Args&& ...) [with _Args = {const std::piecewise_construct_t&, std::tuple<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&, long int&>, std::tuple<int&&, int&&, Controller::Status&&>}; _Key = Controller::NodeId; _Tp = Controller::MembershipEntry; _Compare = std::less<Controller::NodeId>; _Alloc = std::allocator<std::pair<const Controller::NodeId, Controller::MembershipEntry> >; typename std::_Rb_tree<_Key, std::pair<const _Key, _Tp>, std::_Select1st<std::pair<const _Key, _Tp> >, _Compare, typename __gnu_cxx::__alloc_traits<_Alloc>::rebind<std::pair<const _Key, _Tp> >::other>::iterator = std::_Rb_tree_iterator<std::pair<const Controller::NodeId, Controller::MembershipEntry> >]’
+sender.h:151:73:   required from here
+/usr/include/c++/8/tuple:1668:70: error: no matching function for call to ‘Controller::NodeId::NodeId(std::__cxx11::basic_string<char>&, std::__cxx11::basic_string<char>&, long int&)’
+         second(std::forward<_Args2>(std::get<_Indexes2>(__tuple2))...)
+                                                                      ^
+In file included from unit_test.cpp:1:
+sender.h:38:10: note: candidate: ‘Controller::NodeId::NodeId()’
+   struct NodeId {
+          ^~~~~~
+sender.h:38:10: note:   candidate expects 0 arguments, 3 provided
+sender.h:38:10: note: candidate: ‘Controller::NodeId::NodeId(const Controller::NodeId&)’
+sender.h:38:10: note:   candidate expects 1 argument, 3 provided
+sender.h:38:10: note: candidate: ‘Controller::NodeId::NodeId(Controller::NodeId&&)’
+sender.h:38:10: note:   candidate expects 1 argument, 3 provided
+In file included from /usr/include/c++/8/bits/stl_map.h:63,
+                 from /usr/include/c++/8/map:61,
+                 from sender.h:11,
+                 from unit_test.cpp:1:
+/usr/include/c++/8/tuple:1668:70: error: no matching function for call to ‘Controller::MembershipEntry::MembershipEntry(int, int, Controller::Status)’
+         second(std::forward<_Args2>(std::get<_Indexes2>(__tuple2))...)
+                                                                      ^
+In file included from unit_test.cpp:1:
+sender.h:47:10: note: candidate: ‘Controller::MembershipEntry::MembershipEntry()’
+   struct MembershipEntry {
+          ^~~~~~~~~~~~~~~
+sender.h:47:10: note:   candidate expects 0 arguments, 3 provided
+sender.h:47:10: note: candidate: ‘constexpr Controller::MembershipEntry::MembershipEntry(const Controller::MembershipEntry&)’
+sender.h:47:10: note:   candidate expects 1 argument, 3 provided
+sender.h:47:10: note: candidate: ‘constexpr Controller::MembershipEntry::MembershipEntry(Controller::MembershipEntry&&)’
+sender.h:47:10: note:   candidate expects 1 argument, 3 provided
+make: *** [Makefile:12: unit_test] Error 1

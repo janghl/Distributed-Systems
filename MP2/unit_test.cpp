@@ -3,7 +3,6 @@
 void test1() {
   Controller controller;
   controller.controller();
-  std::map<Controller::NodeId, Controller::MembershipEntry> list1;
   // specify fields for list1
   std::map<Controller::NodeId, Controller::MembershipEntry> list2;
   // specify fields for list2
@@ -24,8 +23,8 @@ void test1() {
   Controller::MembershipEntry entry7;
   Controller::MembershipEntry entry8;
   Controller::MembershipEntry entry9;
-  list1[node2] = entry2;
-  list1[node3] = entry3;
+  controller.membership_list_[node2] = entry2;
+  controller.membership_list_[node3] = entry3;
   list2[node4] = entry4;
   list2[node5] = entry5;
   list2[node6] = entry6;
@@ -63,7 +62,7 @@ void test1() {
   entry7.local_time = 1025;
   entry7.status = Controller::Status::kAlive;
 
-  static bool suspicion = false;
+  controller.using_suspicion_ = false;
   entry5.status = Controller::Status::kFailed;
   entry8.status = Controller::Status::kFailed;
   entry2.status = Controller::Status::kAlive;
@@ -82,12 +81,16 @@ void test1() {
   entry3.local_time = 246;
   entry9.count = 1024;
   entry9.local_time = 1025;
-  int status = controller.Merge();
+  controller.Merge(list2);
   // specify fields for expected
-  static_assert(list1 == expected);
+  if(controller.membership_list_ == expected)
+       std::cout<<"true";
+  else
+   std::cout<<"false";
 }
 void test2() {
-  std::map<Controller::NodeId, Controller::MembershipEntry> list1;
+  Controller controller;
+  controller.controller();
   // specify fields for list1
   std::map<Controller::NodeId, Controller::MembershipEntry> list2;
   // specify fields for list2
@@ -110,9 +113,9 @@ void test2() {
   Controller::MembershipEntry entry7;
   Controller::MembershipEntry entry8;
   Controller::MembershipEntry entry9;
-  list1[node1] = entry1;
-  list1[node2] = entry2;
-  list1[node3] = entry3;
+  controller.membership_list_[node1] = entry1;
+  controller.membership_list_[node2] = entry2;
+  controller.membership_list_[node3] = entry3;
   list2[node4] = entry4;
   list2[node5] = entry5;
   list2[node6] = entry6;
@@ -147,7 +150,7 @@ void test2() {
   node9.port = "8080";
   node9.time_stamp = 10;
 
-  static bool suspicion = true;
+  controller.using_suspicion_ = true;
   entry4.status = Controller::Status::kFailed;
   entry7.status = Controller::Status::kFailed;
   entry1.status = Controller::Status::kFailed;
@@ -178,23 +181,27 @@ void test2() {
   entry9.count = 1024;
   entry9.local_time = 1025;
   // Fix this
-  int status = merge(list1, list2, machine);
+  controller.Merge(list2);
   // specify fields for expected
-  static_assert(list1 == expected);
+  if(controller.membership_list_ == expected)
+       std::cout<<"true";
+  else
+   std::cout<<"false";
 }
 void checkertest1() {
-  Controller controller; // machine=0, num=1, expect=2
+  Controller controller; // machine=0, num=1, expect=2Controller controller;
+  controller.controller();
   std::map<Controller::NodeId, Controller::MembershipEntry> list;
   Controller::NodeId node1;
   Controller::NodeId node2;
   Controller::NodeId node3;
-  static bool suspicion = false;
+  controller.using_suspicion_ = false;
   Controller::MembershipEntry entry1;
   Controller::MembershipEntry entry2;
   Controller::MembershipEntry entry3;
-  list[node1] = entry1;
-  list[node2] = entry2;
-  list[node3] = entry3;
+  controller.membership_list_[node1] = entry1;
+  controller.membership_list_[node2] = entry2;
+  controller.membership_list_[node3] = entry3;
 
   entry1.count = 1044; // machine
   entry1.local_time = 1054;
@@ -203,14 +210,18 @@ void checkertest1() {
   entry2.local_time = 1004;
   entry2.status = Controller::Status::kAlive;
   // Fix this
-  checker(entry1);
-  static_assert(list.find(node1) == list.end());
-
+  controller.Checker();
+  if(controller.membership_list_.find(node1) == controller.membership_list_.end())
+       std::cout<<"true";
+  else
+   std::cout<<"false";
   // make suspicion var public
 }
 void checkertest3() {
 // fix this with public 
-  suspicion = true;
+  Controller controller;
+  controller.controller();
+  controller.using_suspicion_ = true;
   std::map<Controller::NodeId, Controller::MembershipEntry> list;
   Controller::NodeId node1;
   Controller::NodeId node2;
@@ -220,10 +231,10 @@ void checkertest3() {
   Controller::MembershipEntry entry2;
   Controller::MembershipEntry entry3;
   Controller::MembershipEntry entry4;
-  list[node1] = entry1;
-  list[node2] = entry2;
-  list[node3] = entry3;
-  list[node4] = entry4;
+  controller.membership_list_[node1] = entry1;
+  controller.membership_list_[node2] = entry2;
+  controller.membership_list_[node3] = entry3;
+  controller.membership_list_[node4] = entry4;
 
   entry1.count = 1044; // machine
   entry1.local_time = 1094;
@@ -238,20 +249,24 @@ void checkertest3() {
   entry4.local_time = 1024;
   entry4.status = Controller::Status::kAlive;
   // make stuff public to fix this
-  checker(entry1);
-  static_assert(list.find(node1) == list.end());
+  controller.Checker();
+  if(controller.membership_list_.find(node1) == controller.membership_list_.end())
+       std::cout<<"true";
+  else
+   std::cout<<"false";
 }
 void checkertest2() {
-  Controller::MembershipEntry explist;
+  Controller controller;
+  controller.controller();
   Controller::NodeId expnode1;
   Controller::NodeId expnode2;
   Controller::NodeId expnode3;
   Controller::MembershipEntry expentry1;
   Controller::MembershipEntry expentry2;
   Controller::MembershipEntry expentry3;
-  explist[expnode1] = expentry1;
-  explist[expnode2] = expentry2;
-  explist[expnode3] = expentry3;
+  controller.membership_list_[expnode1] = expentry1;
+  controller.membership_list_[expnode2] = expentry2;
+  controller.membership_list_[expnode3] = expentry3;
 
   expentry1.count = 1044; // machine
   expentry1.local_time = 1094;
@@ -262,10 +277,16 @@ void checkertest2() {
   expentry3.count = 1014;
   expentry3.local_time = 1044;
   expentry3.status = Controller::Status::kFailed;
-  static_assert(list == explist);
+  if(controller.membership_list_.find(expnode1) == controller.membership_list_.end())
+       std::cout<<"true";
+  else
+   std::cout<<"false";
 }
 
 int main() {
   test1();
   test2();
+  checkertest1();
+  checkertest2();
+  checkertest3();
 }
