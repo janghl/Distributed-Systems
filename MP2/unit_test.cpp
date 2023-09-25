@@ -5,8 +5,7 @@ int main(int argc, char** argv){
         std::cout << "wrong parameter!" << std::endl 
         << "usage: machine number";
     Controller controller;
-    controller.controller(argv[1]);
-    Controller controller;
+    controller.controller();
     membership_list_ list1;
     // specify fields for list1
     membership_list_ list2;

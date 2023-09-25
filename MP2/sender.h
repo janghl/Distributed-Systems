@@ -1,6 +1,7 @@
 #pragma once
 
 #include <algorithm>
+#include <arpa/inet.h>
 #include <chrono>
 #include <cstdlib>
 #include <cstring>
@@ -11,7 +12,6 @@
 #include <mutex>
 #include <netdb.h>
 #include <sstream>
-#include <cstring>
 #include <string>
 #include <sys/socket.h>
 #include <thread>
@@ -20,7 +20,6 @@
 #include <unordered_map>
 #include <utility>
 #include <vector>
-#include <arpa/inet.h>
 //
 
 class Controller {
@@ -34,6 +33,99 @@ public:
     checker_thread.detach();
     std::thread cli_thread(&Controller::Monitor, this);
     return 0;
+  }
+  enum class Status { kAlive, kFailed, kSuspected, kLeft };
+  struct NodeId {
+    std::string host;
+    std::string port;
+    long time_stamp;
+    bool operator==(const NodeId &other) const {
+      return (host == other.host) && (port == other.port) &&
+             (time_stamp == other.time_stamp);
+    }
+  };
+  struct MembershipEntry {
+    int count;
+    int local_time;
+    Status status;
+    bool operator==(const MembershipEntry &other) const {
+      return (count == other.count) && (local_time == other.local_time) &&
+             (status == other.status);
+    }
+  };
+  std::map<NodeId, MembershipEntry> membership_list_;
+  
+  void Merge(const std::map<NodeId, MembershipEntry> &other) {
+    for (auto &pair : other)
+      if (!(pair.first == self_node_)) {
+        if (membership_list_.find(pair.first) == membership_list_.end()) {
+          membership_list_[pair.first] = pair.second;
+          membership_list_[pair.first].local_time =
+              membership_list_[self_node_].local_time;
+          Log("create new entry " + pair.first.host + "\n");
+        } else if (!using_suspicion_) {
+          MembershipEntry entry = membership_list_[pair.first];
+          if (pair.second.status != Status::kAlive &&
+              entry.status == Status::kAlive) {
+            entry.status = pair.second.status;
+            Log("machine " + pair.first.host + " status changed to " +
+                status_to_string_[entry.status] + "\n");
+          } else if (pair.second.count > membership_list_[pair.first].count) {
+            membership_list_[pair.first].count = pair.second.count;
+            membership_list_[pair.first].local_time =
+                membership_list_[self_node_].local_time;
+            Log("updated entry " + pair.first.host + " on machine " +
+                self_node_.host + "\n");
+          }
+        } else {
+          if (pair.second.status == Status::kFailed ||
+              pair.second.status == Status::kLeft) {
+            membership_list_[pair.first].status = pair.second.status;
+            Log(+"machine " + pair.first.host + " has failed!" + "\n");
+          } else {
+            if (pair.second.count > membership_list_[pair.first].count) {
+              membership_list_[pair.first].count = pair.second.count;
+              membership_list_[pair.first].local_time =
+                  membership_list_[self_node_].local_time;
+              Log("updated entry " + pair.first.host + " on machine " +
+                  self_node_.host + "\n");
+            }
+            if (pair.second.status != membership_list_[pair.first].status) {
+              membership_list_[pair.first].status = pair.second.status;
+              Log("machine " + pair.first.host + " status changed to " +
+                  status_to_string_[pair.second.status] + "\n");
+            }
+          }
+        }
+      }
+  }
+  
+  void Checker() {
+    for (auto &pair : membership_list_)
+      if (!(pair.first == self_node_)) {
+        if (pair.second.local_time - membership_list_[self_node_].local_time >=
+            kTFail) {
+          if (using_suspicion_) {
+            pair.second.status = Status::kSuspected;
+            if (pair.second.local_time -
+                    membership_list_[self_node_].local_time >=
+                kTFail + kTSuspect)
+              pair.second.status = Status::kFailed;
+            if (pair.second.local_time -
+                    membership_list_[self_node_].local_time >=
+                kTFail + kTSuspect + kTCleanup)
+              membership_list_.erase(pair.first);
+          } else {
+            pair.second.status = Status::kFailed;
+            if (pair.second.local_time -
+                    membership_list_[self_node_].local_time >=
+                kTFail + kTCleanup)
+              membership_list_.erase(pair.first);
+          }
+        }
+      }
+    if (membership_list_[self_node_].status == Status::kSuspected)
+      membership_list_[self_node_].status = Status::kAlive;
   }
 
 private:
@@ -144,7 +236,6 @@ private:
     list_mtx_.unlock();
     return retval;
   }
-  enum class Status { kAlive, kFailed, kSuspected, kLeft };
   std::unordered_map<std::string, Status> string_to_status_ = {
       {"alive", Status::kAlive},
       {"suspected", Status::kSuspected},
@@ -159,24 +250,6 @@ private:
     kJoin,
     kLeave,
     kList,
-  };
-  struct NodeId {
-    std::string host;
-    std::string port;
-    long time_stamp;
-    bool operator==(const NodeId &other) const {
-      return (host == other.host) && (port == other.port) &&
-             (time_stamp == other.time_stamp);
-    }
-  };
-  struct MembershipEntry {
-    int count;
-    int local_time;
-    Status status;
-    bool operator==(const MembershipEntry &other) const {
-      return (count == other.count) && (local_time == other.local_time) &&
-             (status == other.status);
-    }
   };
   std::map<NodeId, MembershipEntry> StringToList(const std::string &str) const {
     std::map<NodeId, MembershipEntry> map;
@@ -204,7 +277,6 @@ private:
   const int kTargets = 2;
   std::mutex list_mtx_;
   std::mutex log_mtx_;
-  std::map<NodeId, MembershipEntry> membership_list_;
   bool using_suspicion_;
   std::string host_;
   struct sockaddr introducer_addr_;
@@ -243,33 +315,6 @@ private:
     }
     list_mtx_.unlock();
     return retval;
-  }
-  void Checker() {
-    for (auto &pair : membership_list_)
-      if (!(pair.first == self_node_)) {
-        if (pair.second.local_time - membership_list_[self_node_].local_time >=
-            kTFail) {
-          if (using_suspicion_) {
-            pair.second.status = Status::kSuspected;
-            if (pair.second.local_time -
-                    membership_list_[self_node_].local_time >=
-                kTFail + kTSuspect)
-              pair.second.status = Status::kFailed;
-            if (pair.second.local_time -
-                    membership_list_[self_node_].local_time >=
-                kTFail + kTSuspect + kTCleanup)
-              membership_list_.erase(pair.first);
-          } else {
-            pair.second.status = Status::kFailed;
-            if (pair.second.local_time -
-                    membership_list_[self_node_].local_time >=
-                kTFail + kTCleanup)
-              membership_list_.erase(pair.first);
-          }
-        }
-      }
-    if (membership_list_[self_node_].status == Status::kSuspected)
-      membership_list_[self_node_].status = Status::kAlive;
   }
 
   void Receiver() {
@@ -336,51 +381,6 @@ private:
     }
   }
   // membership_list_: list1, other: list2
-  int Merge(const std::map<NodeId, MembershipEntry> &other) {
-    for (auto &pair : other)
-      if (!(pair.first == self_node_)) {
-        if (membership_list_.find(pair.first) == membership_list_.end()) {
-          membership_list_[pair.first] = pair.second;
-          membership_list_[pair.first].local_time =
-              membership_list_[self_node_].local_time;
-          Log( "create new entry " + pair.first.host +"\n");
-        } else if (!using_suspicion_) {
-          MembershipEntry entry = membership_list_[pair.first];
-          if (pair.second.status != Status::kAlive &&
-              entry.status == Status::kAlive) {
-            entry.status = pair.second.status;
-            Log( "machine " + pair.first.host + " status changed to " + status_to_string_[entry.status] +"\n");
-          } else if (pair.second.count > membership_list_[pair.first].count) {
-            membership_list_[pair.first].count = pair.second.count;
-            membership_list_[pair.first].local_time =
-                membership_list_[self_node_].local_time;
-            Log( "updated entry " + pair.first.host + " on machine "
-                      + self_node_.host + "\n");
-          }
-        } else {
-          if (pair.second.status == Status::kFailed || pair.second.status == Status::kLeft) {
-            membership_list_[pair.first].status = pair.second.status;
-            Log( + "machine " +pair.first.host + " has failed!"
-                      + "\n");
-          } else {
-            if (pair.second.count > membership_list_[pair.first].count) {
-              membership_list_[pair.first].count = pair.second.count;
-              membership_list_[pair.first].local_time =
-                  membership_list_[self_node_].local_time;
-              Log( "updated entry " + pair.first.host
-                        + " on machine " + self_node_.host + "\n");
-            }
-            if (pair.second.status != membership_list_[pair.first].status) {
-              membership_list_[pair.first].status = pair.second.status;
-              Log( "machine " + pair.first.host
-                        + " status changed to " + status_to_string_[pair.second.status]
-                        + "\n");
-            }
-          }
-        }
-      }
-    return 0;
-  }
   void Client() {
     sock_fd_ = socket(AF_INET, SOCK_DGRAM, 0);
     while (true) {
@@ -405,12 +405,14 @@ private:
         hints.ai_family = AF_INET;
         hints.ai_socktype = SOCK_DGRAM;
         hints.ai_flags = AI_PASSIVE;
-        int s = getaddrinfo(target.host.c_str(), target.port.c_str(), &hints, &infoptr);
+        int s = getaddrinfo(target.host.c_str(), target.port.c_str(), &hints,
+                            &infoptr);
         if (s) {
           perror("receiver cannot set address!");
           return;
         }
-        ssize_t size = sendto(sock_fd_, datagram.c_str(), datagram.size(), 0, infoptr->ai_addr, infoptr->ai_addrlen);
+        ssize_t size = sendto(sock_fd_, datagram.c_str(), datagram.size(), 0,
+                              infoptr->ai_addr, infoptr->ai_addrlen);
       }
       list_mtx_.unlock();
     }
