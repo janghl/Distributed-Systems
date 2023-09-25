@@ -43,6 +43,15 @@ public:
       return (host == other.host) && (port == other.port) &&
              (time_stamp == other.time_stamp);
     }
+    bool operator<(const NodeId &other) const {
+      if (host.compare(other.host) < 0) {
+        return true;
+      }
+      if (port.compare(other.port) < 0) {
+        return true;
+      }
+      return time_stamp < other.time_stamp;
+    }
   };
   struct MembershipEntry {
     int count;
@@ -54,7 +63,7 @@ public:
     }
   };
   std::map<NodeId, MembershipEntry> membership_list_;
-  
+
   void Merge(const std::map<NodeId, MembershipEntry> &other) {
     for (auto &pair : other)
       if (!(pair.first == self_node_)) {
@@ -99,7 +108,7 @@ public:
         }
       }
   }
-  
+
   void Checker() {
     for (auto &pair : membership_list_)
       if (!(pair.first == self_node_)) {
@@ -161,8 +170,8 @@ private:
       ss << port_ << std::endl;
       ss << time_stamp_ << std::endl;
       // Send to introducer host and port
-      ssize_t size = sendto(sock_fd_, message.c_str(), message.length(), 0,
-                            &introducer_addr_, addrlen_);
+      sendto(sock_fd_, message.c_str(), message.length(), 0, &introducer_addr_,
+             addrlen_);
     }
 
     // cond var to make sure the fd is connected
@@ -275,7 +284,7 @@ private:
   const int kTSuspect = 20;
   const int kHeartbeatInterval = 20;
   const int kScale = 10;
-  const int kTargets = 2;
+  const unsigned int kTargets = 2;
   std::mutex list_mtx_;
   std::mutex log_mtx_;
   std::string host_;
@@ -342,12 +351,10 @@ private:
       }
       char buffer[4096];
       // get other fd
-      int other_fd;
       int client_len;
       struct sockaddr_in client_addr;
-      ssize_t size =
-          recvfrom(sock_fd, buffer, 4096, 0, (struct sockaddr *)&client_addr,
-                   (socklen_t *)&client_len);
+      recvfrom(sock_fd, buffer, 4096, 0, (struct sockaddr *)&client_addr,
+               (socklen_t *)&client_len);
       std::string result(buffer);
       std::stringstream ss(result);
       std::string line;
@@ -375,8 +382,8 @@ private:
         oss << "DATA" << std::endl;
         oss << ListToString();
         // Send membership list back to newly joined member
-        ssize_t size = sendto(sock_fd_, data.c_str(), data.size(), 0,
-                              (struct sockaddr *)&client_addr, addrlen);
+        sendto(sock_fd_, data.c_str(), data.size(), 0,
+               (struct sockaddr *)&client_addr, addrlen);
       }
     }
   }
@@ -411,8 +418,8 @@ private:
           perror("receiver cannot set address!");
           return;
         }
-        ssize_t size = sendto(sock_fd_, datagram.c_str(), datagram.size(), 0,
-                              infoptr->ai_addr, infoptr->ai_addrlen);
+        sendto(sock_fd_, datagram.c_str(), datagram.size(), 0, infoptr->ai_addr,
+               infoptr->ai_addrlen);
       }
       list_mtx_.unlock();
     }
