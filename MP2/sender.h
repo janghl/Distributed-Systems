@@ -187,7 +187,12 @@ private:
       hints.ai_family = AF_INET;
       hints.ai_socktype = SOCK_DGRAM;
       hints.ai_flags = AI_PASSIVE;
-      int s = getaddrinfo("fa23-cs425-6901.cs.illinois.edu", "8080", &hints, &infoptr);
+      int s = getaddrinfo("fa23-cs425-6901.cs.illinois.edu", "8080", &hints,
+                          &infoptr);
+      if (s) {
+        perror("receiver cannot set address!");
+        return;
+      }
       sendto(sock_fd_, message.c_str(), message.length(), 0, infoptr->ai_addr,
              infoptr->ai_addrlen);
     }
@@ -350,7 +355,8 @@ private:
         continue;
       }
       retval.push_back(iter->first);
-      if (retval.size() == kTargets || retval.size() == membership_list_.size() - 1) {
+      if (retval.size() == kTargets ||
+          retval.size() == membership_list_.size() - 1) {
         break;
       }
     }
