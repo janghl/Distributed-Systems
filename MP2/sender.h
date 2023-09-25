@@ -174,6 +174,23 @@ private:
     return;
   }
 
+  void list_self(){
+            Log(self_node_.host);
+            return;
+  }
+
+  void list_mem(){
+            for(auto &i: membership_list_){
+                      Log("host: "+i.first.host+"\n");
+                      Log("port: "+i.first.port+"\n");
+                      Log("time stamp: "+std::to_string(i.first.time_stamp)+"\n");
+                      Log("count: "+std::to_string(i.second.count)+"\n");
+                      Log("local time: "+std::to_string(i.second.local_time)+"\n");
+                      Log("status: "+status_to_string_[i.second.status]+"\n");
+            }
+            return;
+  }
+
   void Join() {
     auto time = std::chrono::system_clock::now();
     time_stamp_ = time.time_since_epoch().count();
@@ -251,7 +268,7 @@ private:
     list_mtx_.unlock();
   }
   void Monitor() {
-    std::cout << "Commands: join, leave, list" << std::endl;
+    std::cout << "Commands: join, leave, list, list_self, list_mem" << std::endl;
     std::cout << "Input: ";
     std::string command;
     while (std::cin >> command) {
@@ -261,6 +278,10 @@ private:
         Leave();
       } else if (command == "list") {
         List();
+      } else if (command == "list_self") {
+        list_self();
+      } else if (command == "list_mem") {
+        list_mem();
       } else if (command == "switch") {
         if (using_suspicion_) {
           Log("Switch off suspicion");
