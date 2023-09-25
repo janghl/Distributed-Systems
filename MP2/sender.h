@@ -11,6 +11,7 @@
 #include <mutex>
 #include <netdb.h>
 #include <sstream>
+#include <cstring>
 #include <string>
 #include <sys/socket.h>
 #include <thread>
@@ -19,7 +20,7 @@
 #include <unordered_map>
 #include <utility>
 #include <vector>
-
+#include <arpa/inet.h>
 //
 
 class Controller {
@@ -91,7 +92,7 @@ private:
     list_mtx_.unlock();
   }
   void List() {
-    std::cout << "Membership List on host " + host_ << std::endl;
+    Log("Membership List on host " + host_ + "\n");
     list_mtx_.lock();
     for (const auto &[key, entry] : membership_list_) {
       std::string status_string = status_to_string_[entry.status];
@@ -343,41 +344,38 @@ private:
           membership_list_[pair.first] = pair.second;
           membership_list_[pair.first].local_time =
               membership_list_[self_node_].local_time;
-          std::cout << "create new entry " << pair.first.host << std::endl;
+          Log( "create new entry " + pair.first.host +"\n");
         } else if (!using_suspicion_) {
           MembershipEntry entry = membership_list_[pair.first];
           if (pair.second.status != Status::kAlive &&
               entry.status == Status::kAlive) {
             entry.status = pair.second.status;
-            std::cout << "machine " << pair.first.host << " status changed to "
-                      << status_to_string_[entry.status] << std::endl;
+            Log( "machine " + pair.first.host + " status changed to " + status_to_string_[entry.status] +"\n");
           } else if (pair.second.count > membership_list_[pair.first].count) {
             membership_list_[pair.first].count = pair.second.count;
             membership_list_[pair.first].local_time =
                 membership_list_[self_node_].local_time;
-            std::cout << "updated entry " << pair.first.host << " on machine "
-                      << self_node_.host << std::endl;
+            Log( "updated entry " + pair.first.host + " on machine "
+                      + self_node_.host + "\n");
           }
         } else {
-          if (pair.second.status == Status::kFailed ||
-              membership_list_[pair.first].status == Status::kFailed) {
-            pair.second.status =
-                membership_list_[pair.first].status == Status::kFailed;
-            std::cout << "machine " << pair.first.host << " has failed!"
-                      << std::endl;
+          if (pair.second.status == Status::kFailed || pair.second.status == Status::kLeft) {
+            membership_list_[pair.first].status = pair.second.status;
+            Log( + "machine " +pair.first.host + " has failed!"
+                      + "\n");
           } else {
             if (pair.second.count > membership_list_[pair.first].count) {
               membership_list_[pair.first].count = pair.second.count;
               membership_list_[pair.first].local_time =
                   membership_list_[self_node_].local_time;
-              std::cout << "updated entry " << pair.first.host << " on machine "
-                        << self_node_.host << std::endl;
+              Log( "updated entry " + pair.first.host
+                        + " on machine " + self_node_.host + "\n");
             }
             if (pair.second.status != membership_list_[pair.first].status) {
               membership_list_[pair.first].status = pair.second.status;
-              std::cout << "machine " << pair.first.host
-                        << " status changed to " << pair.second.status
-                        << std::endl;
+              Log( "machine " + pair.first.host
+                        + " status changed to " + pair.second.status
+                        + "\n");
             }
           }
         }
