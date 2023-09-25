@@ -25,7 +25,7 @@
 
 class Controller {
 public:
-  int controller(int machine) {
+  int controller() {
     std::thread sender_thread(&Controller::Client, this);
     sender_thread.detach();
     std::thread receiver_thread(&Controller::Receiver, this);
@@ -206,7 +206,6 @@ private:
   std::mutex log_mtx_;
   std::map<NodeId, MembershipEntry> membership_list_;
   bool using_suspicion_;
-  int machine_;
   std::string host_;
   struct sockaddr introducer_addr_;
   socklen_t addrlen_;
@@ -273,7 +272,7 @@ private:
       membership_list_[self_node_].status = Status::kAlive;
   }
 
-  void Receiver(int machine, struct MembershipEntry *list) {
+  void Receiver() {
     int sock_fd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
     struct addrinfo hints, *infoptr;
     hints.ai_family = AF_INET;
