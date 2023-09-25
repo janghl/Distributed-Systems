@@ -81,20 +81,10 @@ private:
       return;
     }
     if (it->second.status != Status::kAlive) {
-      Log("Self status isn't alive");
+      Log("Only alive node can voluntarily leave");
       return;
     }
-    // send this to who?
-    std::string message;
-    std::stringstream ss(message);
-    ss << "LEAVE" << std::endl;
-    ss << host_ << std::endl;
-    ss << port_ << std::endl;
-    ss << time_stamp_ << std::endl;
-    // figure this out later
-    ssize_t size = sendto(sock_fd_, message.c_str(), message.length(), 0,
-                          &introducer_addr_, addrlen_);
-    // send gossip to a few about leaving
+    it->second.status = Status::kLeft;
     list_mtx_.unlock();
   }
   void List() {
@@ -152,15 +142,18 @@ private:
     kAlive,
     kFailed,
     kSuspected,
+    kLeft
   };
   std::unordered_map<std::string, Status> string_to_status_ = {
       {"alive", Status::kAlive},
       {"suspected", Status::kSuspected},
-      {"failed", Status::kFailed}};
+      {"failed", Status::kFailed},
+      {"left", Status::kLeft}};
   std::unordered_map<Status, std::string> status_to_string_ = {
       {Status::kAlive, "alive"},
       {Status::kSuspected, "suspected"},
-      {Status::kFailed, "failed"}};
+      {Status::kFailed, "failed"},
+      {Status::kLeft, "left"}};
   enum class Command {
     kJoin,
     kLeave,
