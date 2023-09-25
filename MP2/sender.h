@@ -127,6 +127,7 @@ public:
     if (membership_list_[self_node_].status == Status::kSuspected)
       membership_list_[self_node_].status = Status::kAlive;
   }
+  bool using_suspicion_;
 
 private:
   void Log(const std::string &message) {
@@ -277,7 +278,6 @@ private:
   const int kTargets = 2;
   std::mutex list_mtx_;
   std::mutex log_mtx_;
-  bool using_suspicion_;
   std::string host_;
   struct sockaddr introducer_addr_;
   socklen_t addrlen_;
