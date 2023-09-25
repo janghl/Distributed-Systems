@@ -177,7 +177,7 @@ private:
       Log("Non-introducer joined");
       std::stringstream ss;
       ss << "JOIN" << std::endl;
-      ss << host_ << port_ << time_stamp_ << std::endl;
+      ss << host_ << " " << port_ << " " << time_stamp_ << std::endl;
       std::string message = ss.str();
       Log("Sending " + message + " to introducer");
       // Send to introducer host and port
@@ -348,13 +348,9 @@ private:
       if (iter == self_iter) {
         continue;
       }
-      if (std::find(retval.begin(), retval.end(), iter->first) !=
-          retval.end()) {
-        continue;
-      }
       retval.push_back(iter->first);
       if (retval.size() == kTargets ||
-          retval.size() == membership_list_.size() - 1) {
+          retval.size() >= membership_list_.size() - 1) {
         break;
       }
     }
