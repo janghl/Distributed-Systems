@@ -178,9 +178,8 @@ private:
       std::string message;
       std::stringstream ss(message);
       ss << "JOIN" << std::endl;
-      ss << host_ << std::endl;
-      ss << port_ << std::endl;
-      ss << time_stamp_ << std::endl;
+      ss << host_ << port_ << time_stamp_ << std::endl;
+      Log("Sending " + message + " to introducer");
       // Send to introducer host and port
       struct addrinfo hints, *infoptr;
       memset(&hints, 0, sizeof(hints));
@@ -410,8 +409,6 @@ private:
         std::string port;
         long time_stamp;
         ss >> host >> port >> time_stamp;
-        ss >> port;
-        ss >> time_stamp;
         NodeId node{host, port, time_stamp};
         MembershipEntry entry{0, 0, Status::kAlive};
         Log("receiver lock");
