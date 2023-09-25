@@ -32,6 +32,7 @@ public:
     std::thread checker_thread(&Controller::Checker, this);
     checker_thread.detach();
     std::thread cli_thread(&Controller::Monitor, this);
+    cli_thread.detach();
     return 0;
   }
   enum class Status { kAlive, kFailed, kSuspected, kLeft };
@@ -110,31 +111,34 @@ public:
   }
 
   void Checker() {
-    for (auto &pair : membership_list_)
-      if (!(pair.first == self_node_)) {
-        if (pair.second.local_time - membership_list_[self_node_].local_time >=
-            kTFail) {
-          if (using_suspicion_) {
-            pair.second.status = Status::kSuspected;
-            if (pair.second.local_time -
-                    membership_list_[self_node_].local_time >=
-                kTFail + kTSuspect)
+    while (true) {
+      for (auto &pair : membership_list_)
+        if (!(pair.first == self_node_)) {
+          if (pair.second.local_time -
+                  membership_list_[self_node_].local_time >=
+              kTFail) {
+            if (using_suspicion_) {
+              pair.second.status = Status::kSuspected;
+              if (pair.second.local_time -
+                      membership_list_[self_node_].local_time >=
+                  kTFail + kTSuspect)
+                pair.second.status = Status::kFailed;
+              if (pair.second.local_time -
+                      membership_list_[self_node_].local_time >=
+                  kTFail + kTSuspect + kTCleanup)
+                membership_list_.erase(pair.first);
+            } else {
               pair.second.status = Status::kFailed;
-            if (pair.second.local_time -
-                    membership_list_[self_node_].local_time >=
-                kTFail + kTSuspect + kTCleanup)
-              membership_list_.erase(pair.first);
-          } else {
-            pair.second.status = Status::kFailed;
-            if (pair.second.local_time -
-                    membership_list_[self_node_].local_time >=
-                kTFail + kTCleanup)
-              membership_list_.erase(pair.first);
+              if (pair.second.local_time -
+                      membership_list_[self_node_].local_time >=
+                  kTFail + kTCleanup)
+                membership_list_.erase(pair.first);
+            }
           }
         }
-      }
-    if (membership_list_[self_node_].status == Status::kSuspected)
-      membership_list_[self_node_].status = Status::kAlive;
+      if (membership_list_[self_node_].status == Status::kSuspected)
+        membership_list_[self_node_].status = Status::kAlive;
+    }
   }
   bool using_suspicion_;
 
@@ -154,10 +158,9 @@ private:
     auto time = std::chrono::system_clock::now();
     time_stamp_ = time.time_since_epoch().count();
     self_node_ = NodeId{host_, port_, time_stamp_};
+    MembershipEntry entry{0, 0, Status::kAlive};
     list_mtx_.lock();
-    membership_list_.emplace(std::piecewise_construct,
-                             std::forward_as_tuple(host_, port_, time_stamp_),
-                             std::forward_as_tuple(0, 0, Status::kAlive));
+    membership_list_[self_node_] = entry;
     list_mtx_.unlock();
     if (is_introducer_) {
       Log("Introducer joined");
@@ -270,12 +273,10 @@ private:
       while (getline(std::stringstream(entry), substr, ',')) {
         splitted.push_back(substr);
       }
-      map.emplace(
-          std::piecewise_construct,
-          std::forward_as_tuple(splitted[0], splitted[1],
-                                std::stol(splitted[2])),
-          std::forward_as_tuple(std::stoi(splitted[3]), std::stoi(splitted[4])),
-          string_to_status_.at(splitted[5]));
+      NodeId node{splitted[0], splitted[1], std::stol(splitted[2])};
+      MembershipEntry entry{std::stoi(splitted[3]), std::stoi(splitted[4]),
+                            string_to_status_.at(splitted[5])};
+      map[node] = entry;
     }
     return map;
   }
