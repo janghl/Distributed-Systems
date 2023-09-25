@@ -74,7 +74,7 @@ public:
   void Merge(const std::map<NodeId, MembershipEntry> &other) {
     Log("Merge lock");
     list_mtx_.lock();
-    for (auto &pair : other)
+    for (auto &pair : other) {
       if (!(pair.first == self_node_)) {
         if (membership_list_.find(pair.first) == membership_list_.end()) {
           membership_list_[pair.first] = pair.second;
@@ -116,7 +116,8 @@ public:
           }
         }
       }
-      list_mtx_.unlock();
+    }
+    list_mtx_.unlock();
   }
 
   void Checker() {
