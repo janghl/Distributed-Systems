@@ -322,7 +322,7 @@ private:
     Log("targets lock");
     list_mtx_.lock();
     auto self_iter = membership_list_.find(self_node_);
-    if (membership_list_.size() < kTargets + 2) {
+    if (membership_list_.size() == 1) {
       Log("unlock");
       list_mtx_.unlock();
       return retval;
@@ -344,7 +344,7 @@ private:
         continue;
       }
       retval.push_back(iter->first);
-      if (retval.size() == kTargets) {
+      if (retval.size() == kTargets || retval.size() == membership_list_.size() - 1) {
         break;
       }
     }
