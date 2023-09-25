@@ -333,6 +333,7 @@ private:
     std::map<NodeId, MembershipEntry> map;
     std::string entry;
     while (std::stringstream(str) >> entry) {
+      Log(entry);
       std::vector<std::string> splitted;
       std::string substr;
       while (getline(std::stringstream(entry), substr, ',')) {
