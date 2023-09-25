@@ -329,7 +329,7 @@ private:
     kLeave,
     kList,
   };
-  std::map<NodeId, MembershipEntry> StringToList(const std::string &str) const {
+  std::map<NodeId, MembershipEntry> StringToList(const std::string &str) {
     std::map<NodeId, MembershipEntry> map;
     std::string entry;
     while (std::stringstream(str) >> entry) {
