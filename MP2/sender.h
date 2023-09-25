@@ -374,7 +374,7 @@ private:
             if (pair.second.status != membership_list_[pair.first].status) {
               membership_list_[pair.first].status = pair.second.status;
               Log( "machine " + pair.first.host
-                        + " status changed to " + pair.second.status
+                        + " status changed to " + status_to_string_[pair.second.status]
                         + "\n");
             }
           }
