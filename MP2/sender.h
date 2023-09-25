@@ -82,19 +82,20 @@ public:
               membership_list_[self_node_].local_time;
           Log("create new entry " + pair.first.host + "\n");
         } else if (!using_suspicion_) {
-          MembershipEntry entry = membership_list_[pair.first];
+          MembershipEntry &entry = membership_list_[pair.first];
           if (pair.second.status != Status::kAlive &&
               entry.status == Status::kAlive) {
             entry.status = pair.second.status;
             Log("machine " + pair.first.host + " status changed to " +
                 status_to_string_[entry.status] + "\n");
-          } else if (pair.second.count > membership_list_[pair.first].count) {
-            membership_list_[pair.first].count = pair.second.count;
-            membership_list_[pair.first].local_time =
+          } else if (pair.second.count >entry.count) {
+            entry.count = pair.second.count;
+            entry.local_time =
                 membership_list_[self_node_].local_time;
             Log("updated entry " + pair.first.host + " on machine " +
                 self_node_.host + "\n");
           }
+          
         } else {
           if (pair.second.status == Status::kFailed ||
               pair.second.status == Status::kLeft) {
@@ -125,25 +126,32 @@ public:
     while (true) {
       for (auto &pair : membership_list_)
         if (!(pair.first == self_node_)) {
-          if (pair.second.local_time -
-                  membership_list_[self_node_].local_time >=
+          if (membership_list_[self_node_].local_time -
+                  pair.second.local_time >=
               kTFail) {
             if (using_suspicion_) {
+              if (membership_list_[self_node_].local_time -
+                  pair.second.local_time >=
+                  kTFail + kTSuspect){
+              Log("change machine: "+pair.first.host+"status to failed");
+              pair.second.status = Status::kFailed;}
+              else{
+              Log("change machine: "+pair.first.host+"status to suspected");
               pair.second.status = Status::kSuspected;
-              if (pair.second.local_time -
-                      membership_list_[self_node_].local_time >=
-                  kTFail + kTSuspect)
-                pair.second.status = Status::kFailed;
-              if (pair.second.local_time -
-                      membership_list_[self_node_].local_time >=
-                  kTFail + kTSuspect + kTCleanup)
-                membership_list_.erase(pair.first);
+              }
+              if (membership_list_[self_node_].local_time -
+                  pair.second.local_time >=
+                  kTFail + kTSuspect + kTCleanup){
+                Log("Erase machine: "+pair.first.host);
+                membership_list_.erase(pair.first);}
             } else {
               pair.second.status = Status::kFailed;
-              if (pair.second.local_time -
-                      membership_list_[self_node_].local_time >=
-                  kTFail + kTCleanup)
-                membership_list_.erase(pair.first);
+              Log("change machine: "+pair.first.host+"status to failed");
+              if (membership_list_[self_node_].local_time -
+                  pair.second.local_time >=
+                  kTFail + kTCleanup){
+                Log("Erase machine: "+pair.first.host);
+                membership_list_.erase(pair.first);}
             }
           }
         }
@@ -152,6 +160,7 @@ public:
     }
   }
   bool using_suspicion_;
+  NodeId self_node_;
 
 private:
   void Log(const std::string &message) {
@@ -327,7 +336,6 @@ private:
   socklen_t addrlen_;
   std::string port_ = "8080";
   long time_stamp_;
-  NodeId self_node_;
   int sock_fd_;
   bool is_introducer_;
 
