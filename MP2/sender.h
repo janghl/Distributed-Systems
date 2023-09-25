@@ -479,6 +479,9 @@ private:
       std::string datagram = ss.str();
       std::vector<NodeId> targets = GetTargets();
       for (const NodeId &target : targets) {
+        if (target.host == "") {
+          continue;
+        }
         Log("sending datagram");
         struct addrinfo hints, *infoptr;
         memset(&hints, 0, sizeof(hints));
