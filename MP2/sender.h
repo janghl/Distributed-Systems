@@ -168,6 +168,7 @@ private:
   void Join() {
     auto time = std::chrono::system_clock::now();
     time_stamp_ = time.time_since_epoch().count();
+    srand(time_stamp_);
     self_node_ = NodeId{host_, port_, time_stamp_};
     MembershipEntry entry{0, 0, Status::kAlive};
     Log("join lock");
@@ -313,10 +314,10 @@ private:
     }
     return map;
   }
-  const int kTFail = 30;
-  const int kTCleanup = 20;
-  const int kTSuspect = 20;
-  const int kHeartbeatInterval = 20;
+  const int kTFail = 1000;
+  const int kTCleanup = 700;
+  const int kTSuspect = 700;
+  const int kHeartbeatInterval = 500;
   const int kScale = 10;
   const unsigned int kTargets = 2;
   std::mutex list_mtx_;
@@ -347,7 +348,6 @@ private:
     }
     while (true) {
       auto iter = membership_list_.begin();
-      srand(time_stamp_);
       std::advance(iter, rand() % membership_list_.size());
       if (iter == self_iter) {
         continue;
