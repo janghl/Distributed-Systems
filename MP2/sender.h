@@ -167,8 +167,9 @@ private:
     std::ofstream log_file;
     log_mtx_.lock();
     log_file.open("mp2.log", std::ios::app);
-    // append to file new line
-    log_file << message << std::endl;
+    auto time = std::chrono::system_clock::now();
+    long time_stamp = time.time_since_epoch().count();
+    log_file << time_stamp << ": " << message << std::endl;
     log_file.close();
     log_mtx_.unlock();
     return;
