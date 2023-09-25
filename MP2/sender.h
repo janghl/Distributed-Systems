@@ -1,3 +1,5 @@
+#pragma once
+
 #include <algorithm>
 #include <chrono>
 #include <cstdlib>
@@ -15,19 +17,20 @@
 #include <unordered_map>
 #include <utility>
 #include <vector>
+#include <fstream>
 
 //
 
 class Controller {
 public:
   int controller(int machine) {
-    std::thread sender_thread(&Controller::SendHeartbeats, this);
+    std::thread sender_thread(&Controller::Client, this);
     sender_thread.detach();
     std::thread receiver_thread(&Controller::Receiver, this);
     receiver_thread.detach();
     std::thread checker_thread(&Controller::Checker, this);
     checker_thread.detach();
-    std::thread cli_thread(&Controller::Interface, this);
+    std::thread cli_thread(&Controller::Monitor, this);
     return 0;
   }
 
@@ -46,14 +49,14 @@ private:
   void Join() {
     auto time = std::chrono::system_clock::now();
     time_stamp_ = time.time_since_epoch().count();
-    self_node_{host_, port_, time_stamp_};
-    NodeId node_id{host_, port_, time_stamp_};
+    self_node_ = NodeId{host_, port_, time_stamp_};
     list_mtx_.lock();
-    membership_list_.try_emplace(node_id, 0, 0, Status::kAlive);
+    membership_list_.emplace(std::piecewise_construct, std::forward_as_tuple(host_, port_, time_stamp_), std::forward_as_tuple(0, 0, Status::kAlive));
     list_mtx_.unlock();
     if (is_introducer_) {
       Log("Introducer joined");
     } else {
+      Log("Non-introducer joined");
       std::string message;
       std::stringstream ss(message);
       ss << "JOIN" << std::endl;
@@ -61,7 +64,8 @@ private:
       ss << port_ << std::endl;
       ss << time_stamp_ << std::endl;
       // Send to introducer host and port
-      ssize_t size = sendto(sock_fd_, message.c_str(), message.length(), 0, )
+      ssize_t size = sendto(sock_fd_, message.c_str(), message.length(), 0,
+                            &introducer_addr_, addrlen_);
     }
 
     // cond var to make sure the fd is connected
@@ -88,7 +92,8 @@ private:
     ss << port_ << std::endl;
     ss << time_stamp_ << std::endl;
     // figure this out later
-    ssize_t size = sendto(sock_fd_, message.c_str(), message.length(), 0, )
+    ssize_t size = sendto(sock_fd_, message.c_str(), message.length(), 0,
+                          &introducer_addr_, addrlen_);
     // send gossip to a few about leaving
     list_mtx_.unlock();
   }
@@ -115,13 +120,23 @@ private:
         Leave();
       } else if (command == "list") {
         List();
+      } else if (command == "switch") {
+        if (using_suspicion_) {
+          Log("Switch off suspicion");
+          using_suspicion_ = false;
+        } else {
+          Log("Switch on suspicion");
+          using_suspicion_ = true;
+        }
       } else {
-        std::cout << "Unidentified command, use one of join, leave, list"
-                  << std::endl;
+        std::cout
+            << "Unidentified command, use one of join, leave, list, or switch"
+            << std::endl;
       }
       std::cout << "Input: ";
     }
   }
+
   std::string ListToString() const {
     std::string retval;
     std::stringstream ss(retval);
@@ -155,11 +170,17 @@ private:
     std::string host;
     std::string port;
     long time_stamp;
+    bool operator==(const NodeId &other) const {
+      return (host == other.host) && (port == other.port) && (time_stamp == other.time_stamp);
+    }
   };
   struct MembershipEntry {
     int count;
     int local_time;
     Status status;
+    bool operator==(const MembershipEntry &other) const {
+      return (count == other.count) && (local_time == local_time) && (status == other.status);
+    }
   };
   std::map<NodeId, MembershipEntry> StringToList(const std::string &str) const {
     std::map<NodeId, MembershipEntry> map;
@@ -183,17 +204,75 @@ private:
   const int kTSuspect = 20;
   const int kHeartbeatInterval = 20;
   const int kScale = 10;
+  const int kTargets = 2;
   std::mutex list_mtx_;
   std::mutex log_mtx_;
   std::map<NodeId, MembershipEntry> membership_list_;
   bool using_suspicion_;
   int machine_;
   std::string host_;
+  struct sockaddr introducer_addr_;
+  socklen_t addrlen_;
   std::string port_;
   long time_stamp_;
   NodeId self_node_;
   int sock_fd_;
   bool is_introducer_;
+
+  std::vector<NodeId> GetTargets() {
+    std::vector<NodeId> retval;
+    list_mtx_.lock();
+    auto self_iter = membership_list_.find(self_node_);
+    if (membership_list_.size() < kTargets + 2) {
+      return retval;
+    }
+    if (self_iter == membership_list_.end()) {
+      return retval;
+    }
+    while (true) {
+      auto iter = membership_list_.begin();
+      srand(time_stamp_);
+      std::advance(iter, rand() % membership_list_.size());
+      if (iter == self_iter) {
+        continue;
+      }
+      if (std::find(retval.begin(), retval.end(), iter->first) !=
+          retval.end()) {
+        continue;
+      }
+      retval.push_back(iter->first);
+      if (retval.size() == kTargets) {
+        break;
+      }
+    }
+    list_mtx_.unlock();
+    return retval;
+  }
+  void Checker() {
+    for (auto &pair : membership_list_)
+      if (!(pair.first == self_node_)) {
+        if (pair.second.local_time - membership_list_[self_node_].local_time >=
+            kTFail) {
+          if (using_suspicion_) {
+            pair.second.status = Status::kSuspected;
+            if (pair.second.local_time - membership_list_[self_node_].local_time >=
+                kTFail + kTSuspect)
+              pair.second.status = Status::kFailed;
+            if (pair.second.local_time - membership_list_[self_node_].local_time >=
+                kTFail + kTSuspect + kTCleanup)
+              membership_list_.erase(pair.first);
+          } else {
+            pair.second.status = Status::kFailed;
+            if (pair.second.local_time - membership_list_[self_node_].local_time >=
+                kTFail + kTCleanup)
+              membership_list_.erase(pair.first);
+          }
+        }
+      }
+    if (membership_list_[self_node_].status == Status::kSuspected)
+      membership_list_[self_node_].status = Status::kAlive;
+  }
+
   int Receiver(int machine, struct MembershipEntry *list) {
     int sock_fd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
     struct addrinfo hints, *infoptr;
@@ -264,6 +343,7 @@ private:
       }
       if (line == "LEAVE") {
         list_mtx_.lock();
+        
       }
       std::map<NodeId, MembershipEntry> other_list =
           StringToList(std::string(buffer));
@@ -326,62 +406,40 @@ private:
     }
     return 0;
   }
-};
-
-void delete() {
-  for (const auto &[key, value] : list1) {
-  key:
-    NodeId;
-  value:
-    MembershipEntry;
-    auto list2iterator = list2.find(key);
-    list2iterator->first : NodeId;
-    list2iterator->second : MembershipEntry;
+  void Client() {
+    sock_fd_ = socket(AF_INET, SOCK_DGRAM, 0);
+    while (true) {
+      std::this_thread::sleep_for(
+          std::chrono::milliseconds(kHeartbeatInterval));
+      list_mtx_.lock();
+      auto iter = membership_list_.find(self_node_);
+      if (iter == membership_list_.end()) {
+        continue;
+      }
+      membership_list_[self_node_].count++;
+      membership_list_[self_node_].local_time++;
+      // construct package send to all neighbors
+      std::string datagram;
+      std::stringstream ss(datagram);
+      ss << "DATA" << std::endl;
+      ss << ListToString() << std::endl;
+      std::vector<NodeId> targets = GetTargets();
+      for (const NodeId &target : targets) {
+        struct sockaddr_in service;
+        memset(&service, 0, sizeof(service));
+        service.sin_family = AF_INET;
+        service.sin_port = htons(8080);
+        service.sin_addr.s_addr = inet_addr("")
+      }
+      list_mtx_.unlock();
+    }
   }
-}
-
-const static char *hosts[] = {
-    "fa23-cs425-6901.cs.illinois.edu", "fa23-cs425-6902.cs.illinois.edu",
-    "fa23-cs425-6903.cs.illinois.edu", "fa23-cs425-6904.cs.illinois.edu",
-    "fa23-cs425-6905.cs.illinois.edu", "fa23-cs425-6906.cs.illinois.edu",
-    "fa23-cs425-6907.cs.illinois.edu", "fa23-cs425-6908.cs.illinois.edu",
-    "fa23-cs425-6909.cs.illinois.edu", "fa23-cs425-6910.cs.illinois.edu",
-};
-
-/*  sending heartbeats(membership list) to hosts[id]
-    return 0 if succeeded, return 1 if failed
-    usage: target machine number, membership list
-*/
-
-int sender(int id, struct MembershipList *list) {
-  sock_fd_ = socket(AF_INET, SOCK_DREAM, IPPROTO_UDP);
-  struct addrinfo hints, *infoptr;
-  memset(&hints, 0, sizeof(hints));
-  hints.ai_family = AF_INET;
-  hints.ai_socktype = SOCK_DREAM;
-  int addr = getaddrinfo(hosts[id], "8080", &hints, &infoptr);
-  if (addr) {
-    perror("sender cannot set address!");
-    return 1;
-  }
-  if (connect(sock_fd, infoptr->ai_addr, infoptr->ai_addrlen) == -1) {
-    perror("sender cannot connect! target machine number = " + id);
-    return 1;
-  }
-  char *buffer = new char[Scale * sizeof(struct MembershipList)];
-  std::memcpy(buffer, list, Scale * sizeof(struct MembershipList));
-  if (send(sock_fd, buffer, Scale * sizeof(struct MembershipList), 0) == -1) {
-    perror("sender cannot send to machine " + id);
-    return 1;
-  }
-  close(sock_fd);
-  return 0;
-  int sender(int id, struct MembershipEntry *list) {
-    int sock_fd = socket(AF_INET, SOCK_DREAM, IPPROTO_UDP);
+  void OpenClient() {
+    sock_fd_ = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
     struct addrinfo hints, *infoptr;
     memset(&hints, 0, sizeof(hints));
     hints.ai_family = AF_INET;
-    hints.ai_socktype = SOCK_DREAM;
+    hints.ai_socktype = SOCK_DGRAM;
     int addr = getaddrinfo(hosts[id], "8080", &hints, &infoptr);
     if (addr) {
       perror("sender cannot set address!");
@@ -391,162 +449,12 @@ int sender(int id, struct MembershipList *list) {
       perror("sender cannot connect! target machine number = " + id);
       return 1;
     }
-    char *buffer = new char[Scale * sizeof(struct MembershipEntry)];
-    std::memcpy(buffer, list, Scale * sizeof(struct MembershipEntry));
-    if (send(sock_fd, buffer, Scale * sizeof(struct MembershipEntry), 0) ==
-        -1) {
-      perror("sender cannot send to machine " + id);
-      return 1;
-    }
-    close(sock_fd);
-    return 0;
   }
-
-/*  background thread
-    generate and update my own heartbeats and local time
-    send heartbeats to a random neighbour each 20ms
-*/
-// change logic so that
-// 2 3 4 5 6 7 8 9 10
-// 2 5 8 7 6 4 3 10 9
-// 2n - 1
-// 
-int send_heartbeats(int machine, struct MembershipEntry* list){
-    while(true){
-        list_mtx_.lock();
-        list[machine].count++;
-        list[machine].local_time++;
-        srand (time(NULL));
-        int target;
-        while(machine == (target = rand()%10+1));
-        sender(target, list);
-        list_mtx_.unlock();
-        std::this_thread::sleep_for(std::chrono::milliseconds(heartbeat_interval));
-  /*  background thread
-      generate and update my own heartbeats and local time
-      send heartbeats to a random neighbour each 20ms
-  */
-  // change logic so that
-  // 2 3 4 5 6 7 8 9 10
-  // 2 5 8 7 6 4 3 10 9
-  // 2n - 1
-  //
-  int send_heartbeats(int machine, struct MembershipEntry *list) {
-    while (true) {
-      std::lock_guard<std::mutex> lock(mutex);
-      list[machine].count++;
-      list[machine].local_time++;
-      srand(time(NULL));
-      int target;
-      while (machine == (target = rand() % 10 + 1))
-        ;
-      sender(target, list);
-      std::this_thread::sleep_for(
-          std::chrono::milliseconds(heartbeat_interval));
-    }
-    return 0;
-}
-
-
-  // write unit tests for this
-  //
-  // TODO: specify merge in place, use const static
-  /*  create neighbour's entry;
-      detect status change;
-      merging received list to local one;
-      usage: local membership list, received membership list, machine number
-  */
-
-  // unit test this too
-int checker(){
-    for(auto &iter: membership_list_)
-      if(iter->first!=self){
-        if(iter->second.local_time-membership_list_[self].local_time>=kTFail){
-            if(suspicion==true){
-                iter->second.local_time.status = kSuspected;
-                if(iter->second.local_time-membership_list_[self].local_time>=kTFail+kTSuspect)
-                    iter->second.status = kFailed;
-                if(iter->second.local_time-membership_list_[self].local_time>=kTFail+kTSuspect+kTCleanup)
-                    membership_list_.erase(iter);
-            }
-            else {
-                iter->second.status = kFailed;
-                if(iter->second.local_time-membership_list_[self].local_time>=kTFail+kTCleanup)
-                    membership_list_.erase(iter);
-            }
-        }
-    }
-    if (membership_list_[self].status = kSuspected)
-      membership_list_[self].status = kAlive;
-  }
-// write unit tests for this
-// 
-// TODO: specify merge in place, use const static
-/*  create neighbour's entry;
-    detect status change;
-    merging received list to local one;
-    usage: local membership list, received membership list, machine number
-*/
-
-/*  background thread
-    open service to others
-    modify my own list when receiving a package
-    return 0 if succeeded, return 1 if failed
-*/
-int receiver(int machine, struct MembershipEntry* list){
-    int sock_fd = socket(AF_INET, SOCK_DREAM, IPPROTO_UDP);
-    struct addrinfo hints, *infoptr;
-    hints.ai_family = AF_INET;
-    hints.ai_socktype = SOCK_DREAM;
-    hints.ai_flags = AI_PASSIVE;
-    int s = getaddrinfo(NULL, "8080", &hints, &infoptr);
-    if(s){
-        perror("receiver cannot set address!");
-        return 1;
-    }
-    if(bind(sock_fd, infoptr.ai_addr, infoptr.ai_addrlen) == -1){
-        perror("receiver cannot bind!");
-        return 1;
-    }
-    std::cout<<"bound!";
-    struct sockaddr_storage addr;
-    int addrlen = sizeof(addr);
-    while(true){
-        char *buffer = new char[Scale * sizeof(struct MembershipEntry)];
-        struct MembershipEntry* recvlist = new struct MembershipEntry[Scale];
-        int byte_count = recvfrom(sock_fd, buffer, Scale * sizeof(struct MembershipEntry),0, &addr, &addrlen); // recv
-        if(byte_count > 0)
-            std::cout<<"received "<< byte_count<< " bytes successfully!"<<std::endl;
-        else
-            std::cout<<"receive failed!"<<std::endl;
-        std::memcpy(recvlist, buffer, Scale * sizeof(struct MembershipEntry));
-        list_mtx_.lock();
-        merge(recvlist);
-        list_mtx_.unlock();
-    }
-    return 0;
-}
-
-
-
-  int controller(int machine) {
-    struct MembershipEntry[Scale] list;
-
-    // initialize my own node_id
-    std::string timestamp = std::to_string(((int)time(NULL)) % 60);
-    list[machine].node_id = str(hosts[machine] + " 8080 " + timestamp);
-
-    // multithread sender
-    std::thread sender_thread{&send_heartbeats, this, machine, list};
-    sender_thread.detach();
-
-    // multithread receiver
-    std::thread receiver_thread{&receiver, this, machine, list};
-    receiver_thread.detach();
-
-    // multithread checker
-    std::thread checker_thread{&checker, this, machine, list};
-    checker_thread.detach();
-
-    return 0;
-  }
+  const std::vector<std::string> kHosts{
+      "fa23-cs425-6901.cs.illinois.edu", "fa23-cs425-6902.cs.illinois.edu",
+      "fa23-cs425-6903.cs.illinois.edu", "fa23-cs425-6904.cs.illinois.edu",
+      "fa23-cs425-6905.cs.illinois.edu", "fa23-cs425-6906.cs.illinois.edu",
+      "fa23-cs425-6907.cs.illinois.edu", "fa23-cs425-6908.cs.illinois.edu",
+      "fa23-cs425-6909.cs.illinois.edu", "fa23-cs425-6910.cs.illinois.edu",
+  };
+};
