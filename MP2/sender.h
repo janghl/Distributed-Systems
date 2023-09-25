@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <chrono>
 #include <cstdlib>
+#include <cstring>
 #include <ctime>
 #include <fstream>
 #include <iostream>
@@ -129,7 +130,8 @@ private:
     }
   }
 
-  std::string ListToString() const {
+  std::string ListToString() {
+    list_mtx_.lock();
     std::string retval;
     std::stringstream ss(retval);
     for (const auto &[key, value] : membership_list_) {
@@ -138,6 +140,7 @@ private:
          << status_to_string_.at(value.status) << " ";
     }
     ss << std::endl;
+    list_mtx_.unlock();
     return retval;
   }
   enum class Status { kAlive, kFailed, kSuspected, kLeft };
@@ -170,7 +173,7 @@ private:
     int local_time;
     Status status;
     bool operator==(const MembershipEntry &other) const {
-      return (count == other.count) && (local_time == local_time) &&
+      return (count == other.count) && (local_time == other.local_time) &&
              (status == other.status);
     }
   };
@@ -190,6 +193,7 @@ private:
           std::forward_as_tuple(std::stoi(splitted[3]), std::stoi(splitted[4])),
           string_to_status_.at(splitted[5]));
     }
+    return map;
   }
   const int kTFail = 30;
   const int kTCleanup = 20;
@@ -308,7 +312,7 @@ private:
         std::getline(ss, rest);
         std::map<NodeId, MembershipEntry> other_list = StringToList(rest);
         // do we need machine here?
-        merge(other_list);
+        Merge(other_list);
       } else {
         std::string host;
         std::string port;
@@ -316,11 +320,6 @@ private:
         ss >> host >> port >> time_stamp;
         ss >> port;
         ss >> time_stamp;
-      }
-      else if (line == "JOIN") {
-        // add to membership list
-        // LOG
-        // send my membership list to new machine
         NodeId node{host, port, time_stamp};
         MembershipEntry entry{0, 0, Status::kAlive};
         list_mtx_.lock();
@@ -330,23 +329,11 @@ private:
         std::stringstream oss(data);
         oss << "DATA" << std::endl;
         oss << ListToString();
+        // Send membership list back to newly joined member
+        ssize_t size = sendto(sock_fd_, data.c_str(), data.size(), 0,
+                              (struct sockaddr *)&client_addr, addrlen);
       }
     }
-    std::map<NodeId, MembershipEntry> other_list =
-        StringToList(std::string(buffer));
-
-    char *buffer = new char[kScale * sizeof(struct MembershipEntry)];
-    struct MembershipEntry *recvlist = new struct MembershipEntry[Scale];
-    int byte_count =
-        recvfrom(sock_fd, buffer, Scale * sizeof(struct MembershipEntry), 0,
-                 &addr, &addrlen); // recv
-    if (byte_count > 0)
-      std::cout << "received " << byte_count << " bytes successfully!"
-                << std::endl;
-    else
-      std::cout << "receive failed!" << std::endl;
-    std::memcpy(recvlist, buffer, Scale * sizeof(struct MembershipEntry));
-    Merge(recvlist);
   }
   // membership_list_: list1, other: list2
   int Merge(const std::map<NodeId, MembershipEntry> &other) {
@@ -362,7 +349,8 @@ private:
           if (pair.second.status != Status::kAlive &&
               entry.status == Status::kAlive) {
             entry.status = pair.second.status;
-            std::cout << "machine " << pair.first.host << " status changed to " << status_to_string_[entry.status] << std::endl;
+            std::cout << "machine " << pair.first.host << " status changed to "
+                      << status_to_string_[entry.status] << std::endl;
           } else if (pair.second.count > membership_list_[pair.first].count) {
             membership_list_[pair.first].count = pair.second.count;
             membership_list_[pair.first].local_time =
@@ -373,7 +361,8 @@ private:
         } else {
           if (pair.second.status == Status::kFailed ||
               membership_list_[pair.first].status == Status::kFailed) {
-            pair.second.status = membership_list_[pair.first].status == Status::kFailed;
+            pair.second.status =
+                membership_list_[pair.first].status == Status::kFailed;
             std::cout << "machine " << pair.first.host << " has failed!"
                       << std::endl;
           } else {
@@ -381,8 +370,8 @@ private:
               membership_list_[pair.first].count = pair.second.count;
               membership_list_[pair.first].local_time =
                   membership_list_[self_node_].local_time;
-              std::cout << "updated entry " << pair.first.host
-                        << " on machine " << self_node_.host << std::endl;
+              std::cout << "updated entry " << pair.first.host << " on machine "
+                        << self_node_.host << std::endl;
             }
             if (pair.second.status != membership_list_[pair.first].status) {
               membership_list_[pair.first].status = pair.second.status;
@@ -414,29 +403,19 @@ private:
       ss << ListToString() << std::endl;
       std::vector<NodeId> targets = GetTargets();
       for (const NodeId &target : targets) {
-        struct sockaddr_in service;
-        memset(&service, 0, sizeof(service));
-        service.sin_family = AF_INET;
-        service.sin_port = htons(8080);
-        service.sin_addr.s_addr = inet_addr("")
+        struct addrinfo hints, *infoptr;
+        memset(&hints, 0, sizeof(hints));
+        hints.ai_family = AF_INET;
+        hints.ai_socktype = SOCK_DGRAM;
+        hints.ai_flags = AI_PASSIVE;
+        int s = getaddrinfo(target.host.c_str(), target.port.c_str(), &hints, &infoptr);
+        if (s) {
+          perror("receiver cannot set address!");
+          return;
+        }
+        ssize_t size = sendto(sock_fd_, datagram.c_str(), datagram.size(), 0, infoptr->ai_addr, infoptr->ai_addrlen);
       }
       list_mtx_.unlock();
-    }
-  }
-  void OpenClient() {
-    sock_fd_ = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
-    struct addrinfo hints, *infoptr;
-    memset(&hints, 0, sizeof(hints));
-    hints.ai_family = AF_INET;
-    hints.ai_socktype = SOCK_DGRAM;
-    int addr = getaddrinfo(hosts[id], "8080", &hints, &infoptr);
-    if (addr) {
-      perror("sender cannot set address!");
-      return 1;
-    }
-    if (connect(sock_fd, infoptr->ai_addr, infoptr->ai_addrlen) == -1) {
-      perror("sender cannot connect! target machine number = " + id);
-      return 1;
     }
   }
   const std::vector<std::string> kHosts{
