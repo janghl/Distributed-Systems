@@ -182,8 +182,14 @@ private:
       ss << port_ << std::endl;
       ss << time_stamp_ << std::endl;
       // Send to introducer host and port
-      sendto(sock_fd_, message.c_str(), message.length(), 0, &introducer_addr_,
-             addrlen_);
+      struct addrinfo hints, *infoptr;
+      memset(&hints, 0, sizeof(hints));
+      hints.ai_family = AF_INET;
+      hints.ai_socktype = SOCK_DGRAM;
+      hints.ai_flags = AI_PASSIVE;
+      int s = getaddrinfo("fa23-cs425-6901.cs.illinois.edu", "8080", &hints, &infoptr);
+      sendto(sock_fd_, message.c_str(), message.length(), 0, infoptr->ai_addr,
+             infoptr->ai_addrlen);
     }
 
     // cond var to make sure the fd is connected
@@ -441,6 +447,7 @@ private:
       ss << ListToString() << std::endl;
       std::vector<NodeId> targets = GetTargets();
       for (const NodeId &target : targets) {
+        Log("sending datagram");
         struct addrinfo hints, *infoptr;
         memset(&hints, 0, sizeof(hints));
         hints.ai_family = AF_INET;
