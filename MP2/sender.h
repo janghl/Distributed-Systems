@@ -4,6 +4,7 @@
 #include <chrono>
 #include <cstdlib>
 #include <ctime>
+#include <fstream>
 #include <iostream>
 #include <map>
 #include <mutex>
@@ -17,7 +18,6 @@
 #include <unordered_map>
 #include <utility>
 #include <vector>
-#include <fstream>
 
 //
 
@@ -51,7 +51,9 @@ private:
     time_stamp_ = time.time_since_epoch().count();
     self_node_ = NodeId{host_, port_, time_stamp_};
     list_mtx_.lock();
-    membership_list_.emplace(std::piecewise_construct, std::forward_as_tuple(host_, port_, time_stamp_), std::forward_as_tuple(0, 0, Status::kAlive));
+    membership_list_.emplace(std::piecewise_construct,
+                             std::forward_as_tuple(host_, port_, time_stamp_),
+                             std::forward_as_tuple(0, 0, Status::kAlive));
     list_mtx_.unlock();
     if (is_introducer_) {
       Log("Introducer joined");
@@ -138,12 +140,7 @@ private:
     ss << std::endl;
     return retval;
   }
-  enum class Status {
-    kAlive,
-    kFailed,
-    kSuspected,
-    kLeft
-  };
+  enum class Status { kAlive, kFailed, kSuspected, kLeft };
   std::unordered_map<std::string, Status> string_to_status_ = {
       {"alive", Status::kAlive},
       {"suspected", Status::kSuspected},
@@ -164,7 +161,8 @@ private:
     std::string port;
     long time_stamp;
     bool operator==(const NodeId &other) const {
-      return (host == other.host) && (port == other.port) && (time_stamp == other.time_stamp);
+      return (host == other.host) && (port == other.port) &&
+             (time_stamp == other.time_stamp);
     }
   };
   struct MembershipEntry {
@@ -172,7 +170,8 @@ private:
     int local_time;
     Status status;
     bool operator==(const MembershipEntry &other) const {
-      return (count == other.count) && (local_time == local_time) && (status == other.status);
+      return (count == other.count) && (local_time == local_time) &&
+             (status == other.status);
     }
   };
   std::map<NodeId, MembershipEntry> StringToList(const std::string &str) const {
@@ -248,15 +247,18 @@ private:
             kTFail) {
           if (using_suspicion_) {
             pair.second.status = Status::kSuspected;
-            if (pair.second.local_time - membership_list_[self_node_].local_time >=
+            if (pair.second.local_time -
+                    membership_list_[self_node_].local_time >=
                 kTFail + kTSuspect)
               pair.second.status = Status::kFailed;
-            if (pair.second.local_time - membership_list_[self_node_].local_time >=
+            if (pair.second.local_time -
+                    membership_list_[self_node_].local_time >=
                 kTFail + kTSuspect + kTCleanup)
               membership_list_.erase(pair.first);
           } else {
             pair.second.status = Status::kFailed;
-            if (pair.second.local_time - membership_list_[self_node_].local_time >=
+            if (pair.second.local_time -
+                    membership_list_[self_node_].local_time >=
                 kTFail + kTCleanup)
               membership_list_.erase(pair.first);
           }
@@ -266,7 +268,7 @@ private:
       membership_list_[self_node_].status = Status::kAlive;
   }
 
-  int Receiver(int machine, struct MembershipEntry *list) {
+  void Receiver(int machine, struct MembershipEntry *list) {
     int sock_fd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
     struct addrinfo hints, *infoptr;
     hints.ai_family = AF_INET;
@@ -275,11 +277,11 @@ private:
     int s = getaddrinfo(NULL, "8080", &hints, &infoptr);
     if (s) {
       perror("receiver cannot set address!");
-      return 1;
+      return;
     }
     if (bind(sock_fd, infoptr->ai_addr, infoptr->ai_addrlen) == -1) {
       perror("receiver cannot bind!");
-      return 1;
+      return;
     }
     std::cout << "bound!";
     struct sockaddr_storage addr;
@@ -314,89 +316,83 @@ private:
         ss >> host >> port >> time_stamp;
         ss >> port;
         ss >> time_stamp;
-        if (line == "LEAVE") {
-          list_mtx_.lock();
-          membership_list_.erase(iter);
-          list_mtx_.unlock();
-          Log("Leave detected on local membership list");
-        } else if (line == "JOIN") {
-          // add to membership list
-          // LOG
-          // send my membership list to new machine
-          NodeId node{host, port, time_stamp};
-          MembershipEntry entry{0, 0, Status::kAlive};
-          list_mtx_.lock();
-          membership_list_[node] = entry;
-          list_mtx_.unlock();
-          std::string data;
-          std::stringstream oss(data);
-          oss << "DATA" << std::endl;
-          oss << ListToString();
-        }
       }
-      if (line == "LEAVE") {
+      else if (line == "JOIN") {
+        // add to membership list
+        // LOG
+        // send my membership list to new machine
+        NodeId node{host, port, time_stamp};
+        MembershipEntry entry{0, 0, Status::kAlive};
         list_mtx_.lock();
-        
+        membership_list_[node] = entry;
+        list_mtx_.unlock();
+        std::string data;
+        std::stringstream oss(data);
+        oss << "DATA" << std::endl;
+        oss << ListToString();
       }
-      std::map<NodeId, MembershipEntry> other_list =
-          StringToList(std::string(buffer));
-
-      char *buffer = new char[kScale * sizeof(struct MembershipEntry)];
-      struct MembershipEntry *recvlist = new struct MembershipEntry[Scale];
-      int byte_count =
-          recvfrom(sock_fd, buffer, Scale * sizeof(struct MembershipEntry), 0,
-                   &addr, &addrlen); // recv
-      if (byte_count > 0)
-        std::cout << "received " << byte_count << " bytes successfully!"
-                  << std::endl;
-      else
-        std::cout << "receive failed!" << std::endl;
-      std::memcpy(recvlist, buffer, Scale * sizeof(struct MembershipEntry));
-      merge(recvlist);
     }
-    return 0;
+    std::map<NodeId, MembershipEntry> other_list =
+        StringToList(std::string(buffer));
+
+    char *buffer = new char[kScale * sizeof(struct MembershipEntry)];
+    struct MembershipEntry *recvlist = new struct MembershipEntry[Scale];
+    int byte_count =
+        recvfrom(sock_fd, buffer, Scale * sizeof(struct MembershipEntry), 0,
+                 &addr, &addrlen); // recv
+    if (byte_count > 0)
+      std::cout << "received " << byte_count << " bytes successfully!"
+                << std::endl;
+    else
+      std::cout << "receive failed!" << std::endl;
+    std::memcpy(recvlist, buffer, Scale * sizeof(struct MembershipEntry));
+    Merge(recvlist);
   }
   // membership_list_: list1, other: list2
-  int merge(const std::map<NodeId, MembershipEntry> &other) {
-    for(auto &iter: other)
-      if(iter->first!=self) {
-        if (membership_list_.find(iter) == membership_list_.end()) {
-            membership_list_[iter->first] = iter->second;
-            membership_list_[iter->first].local_time = membership_list_[self].local_time;
-            std::cout << "create new entry " << iter->first.host << std::endl;
-        }
-        else if (suspicion == false) {
-            if (iter->second.status != kAlive && membership_list_[iter->first].status == kAlive) {
-            membership_list_[iter->first].status = iter->second.status;
-            std::cout << "machine " << iter->first.host << " status changed to "
-                        << membership_list_[iter->first].status << std::endl;
-            } else if (iter->second.count > membership_list_[iter->first].count) {
-            membership_list_[iter->first].count = iter->second.count;
-            membership_list_[iter->first].local_time = membership_list_[self].local_time;
-            std::cout << "updated entry " << iter->first.host << " on machine " << self.host
-                        << std::endl;
-            } 
-        }
-        else {
-            if (iter->second.status == kFailed || membership_list_[iter->first].status == kFailed) {
-                iter->second.status = membership_list_[iter->first].status = failed;
-                std::cout << "machine " << iter->first.host << " has failed!" << std::endl;
-            } 
-            else {
-                if (iter->second.count > membership_list_[iter->first].count) {
-                membership_list_[iter->first].count = iter->second.count;
-                membership_list_[iter->first].local_time = membership_list_[self].local_time;
-                std::cout << "updated entry " << iter->first.host << " on machine " << self.host
-                            << std::endl;
-                }
-                if (iter->second.status != membership_list_[iter->first].status) {
-                membership_list_[iter->first].status = iter->second.status;
-                std::cout << "machine " << iter->first.host << " status changed to "
-                            << iter->second.status << std::endl;
-                }
+  int Merge(const std::map<NodeId, MembershipEntry> &other) {
+    for (auto &pair : other)
+      if (!(pair.first == self_node_)) {
+        if (membership_list_.find(pair.first) == membership_list_.end()) {
+          membership_list_[pair.first] = pair.second;
+          membership_list_[pair.first].local_time =
+              membership_list_[self_node_].local_time;
+          std::cout << "create new entry " << pair.first.host << std::endl;
+        } else if (!using_suspicion_) {
+          MembershipEntry entry = membership_list_[pair.first];
+          if (pair.second.status != Status::kAlive &&
+              entry.status == Status::kAlive) {
+            entry.status = pair.second.status;
+            std::cout << "machine " << pair.first.host << " status changed to " << status_to_string_[entry.status] << std::endl;
+          } else if (pair.second.count > membership_list_[pair.first].count) {
+            membership_list_[pair.first].count = pair.second.count;
+            membership_list_[pair.first].local_time =
+                membership_list_[self_node_].local_time;
+            std::cout << "updated entry " << pair.first.host << " on machine "
+                      << self_node_.host << std::endl;
+          }
+        } else {
+          if (pair.second.status == Status::kFailed ||
+              membership_list_[pair.first].status == Status::kFailed) {
+            pair.second.status = membership_list_[pair.first].status == Status::kFailed;
+            std::cout << "machine " << pair.first.host << " has failed!"
+                      << std::endl;
+          } else {
+            if (pair.second.count > membership_list_[pair.first].count) {
+              membership_list_[pair.first].count = pair.second.count;
+              membership_list_[pair.first].local_time =
+                  membership_list_[self_node_].local_time;
+              std::cout << "updated entry " << pair.first.host
+                        << " on machine " << self_node_.host << std::endl;
             }
+            if (pair.second.status != membership_list_[pair.first].status) {
+              membership_list_[pair.first].status = pair.second.status;
+              std::cout << "machine " << pair.first.host
+                        << " status changed to " << pair.second.status
+                        << std::endl;
+            }
+          }
         }
-    }
+      }
     return 0;
   }
   void Client() {
