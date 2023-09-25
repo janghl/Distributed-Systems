@@ -25,14 +25,20 @@
 class Controller {
 public:
   int controller() {
+    char buffer[64];
+    gethostname(buffer, 64);
+    host_ = buffer;
+    if (host_ == "fa23-cs425-6901.cs.illinois.edu") {
+      is_introducer_ = true;
+    }
     std::thread sender_thread(&Controller::Client, this);
-    sender_thread.detach();
     std::thread receiver_thread(&Controller::Receiver, this);
-    receiver_thread.detach();
     std::thread checker_thread(&Controller::Checker, this);
-    checker_thread.detach();
     std::thread cli_thread(&Controller::Monitor, this);
-    cli_thread.detach();
+    sender_thread.join();
+    receiver_thread.join();
+    checker_thread.join();
+    cli_thread.join();
     return 0;
   }
   enum class Status { kAlive, kFailed, kSuspected, kLeft };
@@ -111,6 +117,7 @@ public:
   }
 
   void Checker() {
+    std::cout << "Started checker" << std::endl;
     while (true) {
       for (auto &pair : membership_list_)
         if (!(pair.first == self_node_)) {
@@ -159,8 +166,10 @@ private:
     time_stamp_ = time.time_since_epoch().count();
     self_node_ = NodeId{host_, port_, time_stamp_};
     MembershipEntry entry{0, 0, Status::kAlive};
+    Log("join lock");
     list_mtx_.lock();
     membership_list_[self_node_] = entry;
+    Log("unlock");
     list_mtx_.unlock();
     if (is_introducer_) {
       Log("Introducer joined");
@@ -183,21 +192,29 @@ private:
     // send message to introducer to help join
   }
   void Leave() {
+    Log("leave lock");
     list_mtx_.lock();
+    std::cout << host_ << port_ << time_stamp_ << std::endl;
     auto it = membership_list_.find(NodeId{host_, port_, time_stamp_});
-    if (it != membership_list_.end()) {
+    if (it == membership_list_.end()) {
       Log("Couldn't find self entry in membership list");
+      Log("unlock");
+      list_mtx_.unlock();
       return;
     }
     if (it->second.status != Status::kAlive) {
       Log("Only alive node can voluntarily leave");
+      Log("unlock");
+      list_mtx_.unlock();
       return;
     }
     it->second.status = Status::kLeft;
+    Log("unlock");
     list_mtx_.unlock();
   }
   void List() {
     Log("Membership List on host " + host_ + "\n");
+    Log("list lock");
     list_mtx_.lock();
     for (const auto &[key, entry] : membership_list_) {
       std::string status_string = status_to_string_[entry.status];
@@ -206,6 +223,7 @@ private:
              status_string.c_str());
       std::cout << std::endl;
     }
+    Log("unlock");
     list_mtx_.unlock();
   }
   void Monitor() {
@@ -237,6 +255,7 @@ private:
   }
 
   std::string ListToString() {
+    Log("tostring lock");
     list_mtx_.lock();
     std::string retval;
     std::stringstream ss(retval);
@@ -246,6 +265,7 @@ private:
          << status_to_string_.at(value.status) << " ";
     }
     ss << std::endl;
+    Log("unlock");
     list_mtx_.unlock();
     return retval;
   }
@@ -291,7 +311,7 @@ private:
   std::string host_;
   struct sockaddr introducer_addr_;
   socklen_t addrlen_;
-  std::string port_;
+  std::string port_ = "8080";
   long time_stamp_;
   NodeId self_node_;
   int sock_fd_;
@@ -299,12 +319,17 @@ private:
 
   std::vector<NodeId> GetTargets() {
     std::vector<NodeId> retval;
+    Log("targets lock");
     list_mtx_.lock();
     auto self_iter = membership_list_.find(self_node_);
     if (membership_list_.size() < kTargets + 2) {
+      Log("unlock");
+      list_mtx_.unlock();
       return retval;
     }
     if (self_iter == membership_list_.end()) {
+      Log("unlock");
+      list_mtx_.unlock();
       return retval;
     }
     while (true) {
@@ -323,11 +348,13 @@ private:
         break;
       }
     }
+    Log("unlock");
     list_mtx_.unlock();
     return retval;
   }
 
   void Receiver() {
+    std::cout << "Started receiver" << std::endl;
     int sock_fd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
     struct addrinfo hints, *infoptr;
     hints.ai_family = AF_INET;
@@ -375,8 +402,10 @@ private:
         ss >> time_stamp;
         NodeId node{host, port, time_stamp};
         MembershipEntry entry{0, 0, Status::kAlive};
+        Log("receiver lock");
         list_mtx_.lock();
         membership_list_[node] = entry;
+        Log("unlock");
         list_mtx_.unlock();
         std::string data;
         std::stringstream oss(data);
@@ -390,10 +419,12 @@ private:
   }
   // membership_list_: list1, other: list2
   void Client() {
+    std::cout << "Started client" << std::endl;
     sock_fd_ = socket(AF_INET, SOCK_DGRAM, 0);
     while (true) {
       std::this_thread::sleep_for(
           std::chrono::milliseconds(kHeartbeatInterval));
+      Log("client lock");
       list_mtx_.lock();
       auto iter = membership_list_.find(self_node_);
       if (iter == membership_list_.end()) {
@@ -401,6 +432,8 @@ private:
       }
       membership_list_[self_node_].count++;
       membership_list_[self_node_].local_time++;
+      Log("unlock");
+      list_mtx_.unlock();
       // construct package send to all neighbors
       std::string datagram;
       std::stringstream ss(datagram);
@@ -422,7 +455,6 @@ private:
         sendto(sock_fd_, datagram.c_str(), datagram.size(), 0, infoptr->ai_addr,
                infoptr->ai_addrlen);
       }
-      list_mtx_.unlock();
     }
   }
   const std::vector<std::string> kHosts{
