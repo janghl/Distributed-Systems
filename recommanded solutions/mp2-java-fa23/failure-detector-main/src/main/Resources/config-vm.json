@@ -1,0 +1,52 @@
+[
+    {
+        "id": 1,
+        "ip": "fa23-cs425-5201.cs.illinois.edu",
+        "port": 8000
+    },
+    {
+        "id": 2,
+        "ip": "fa23-cs425-5202.cs.illinois.edu",
+        "port": 8000
+    },
+    {
+        "id": 3,
+        "ip": "fa23-cs425-5203.cs.illinois.edu",
+        "port": 8000
+    },
+    {
+        "id": 4,
+        "ip": "fa23-cs425-5204.cs.illinois.edu",
+        "port": 8000
+    },
+    {
+        "id": 5,
+        "ip": "fa23-cs425-5205.cs.illinois.edu",
+        "port": 8000
+    },
+    {
+        "id": 6,
+        "ip": "fa23-cs425-5206.cs.illinois.edu",
+        "port": 8000
+    },
+    {
+        "id": 7,
+        "ip": "fa23-cs425-5207.cs.illinois.edu",
+        "port": 8000
+    },
+    {
+        "id": 8,
+        "ip": "fa23-cs425-5208.cs.illinois.edu",
+        "port": 8000
+    },
+    {
+        "id": 9,
+        "ip": "fa23-cs425-5209.cs.illinois.edu",
+        "port": 8000
+    },
+    {
+        "id": 10,
+        "ip": "fa23-cs425-5210.cs.illinois.edu",
+        "port": 8000
+    }
+]

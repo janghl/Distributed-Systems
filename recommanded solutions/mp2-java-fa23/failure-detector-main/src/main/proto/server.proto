@@ -1,0 +1,49 @@
+syntax = "proto3";
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/empty.proto";
+
+option java_multiple_files = true;
+option java_package = "edu.illinois.cs425.grpcServices";
+
+service HeartbeatServer {
+  rpc heartbeat(MembershipListMessage) returns (google.protobuf.Empty);
+  
+  rpc introduce(IntroduceRequest) returns (MembershipListMessage);
+
+  rpc getMembershipList(google.protobuf.Empty) returns (MembershipListMessage);
+
+  rpc getNodeId(google.protobuf.Empty) returns (NodeId);
+
+  rpc leave(google.protobuf.Empty) returns (google.protobuf.Empty);
+
+  rpc leaveLocal(NodeId) returns (google.protobuf.Empty);
+
+  rpc suspicion(SuspicionRequest) returns (google.protobuf.Empty);
+}
+
+message MembershipListMessage {
+  repeated MembershipEntry membershipList = 1;
+}
+
+message IntroduceRequest {
+  MembershipEntry membershipEntry = 1;
+}
+
+message MembershipEntry {
+  NodeId nodeId = 1;
+  int32 heartbeatCounter = 2;
+  int32 incarnation = 3;
+  int32 status = 4; // enum ordinal values
+}
+
+message NodeId {
+  int32 nodeIndex = 1;
+  string nodeIp = 2;
+  int32 nodePort = 3;
+  int64 nodeTimestamp = 4;
+}
+
+message SuspicionRequest {
+  bool suspicion = 1;
+}
