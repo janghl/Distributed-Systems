@@ -1,0 +1,27 @@
+Sat Oct 14 13:29:18 2023 - [INFO] - STARTING: grep server
+Sat Oct 14 13:29:18 2023 - [INFO] - STARTING: data node server
+Sat Oct 14 13:29:18 2023 - [INFO] - STARTING: name node server
+Sat Oct 14 13:29:18 2023 - [INFO] - STARTING: gossip server
+Sat Oct 14 13:29:18 2023 - [INFO] - STARTING: gossip client
+Sat Oct 14 13:29:18 2023 - [INFO] - STARTING: introducer
+Sat Oct 14 13:32:52 2023 - [INFO] - STARTING: grep server
+Sat Oct 14 13:32:52 2023 - [INFO] - STARTING: data node server
+Sat Oct 14 13:32:52 2023 - [INFO] - STARTING: gossip server
+Sat Oct 14 13:32:52 2023 - [INFO] - JOINED: Machine 1-1 has joined the group
+Sat Oct 14 13:32:52 2023 - [INFO] - JOINED: Machine 1-0 has joined the group
+Sat Oct 14 13:32:52 2023 - [INFO] - STARTING: gossip client
+Sat Oct 14 13:33:12 2023 - [INFO] - FAILED: Machine 1-0 has failed
+Sat Oct 14 13:33:14 2023 - [INFO] - FAILED: Machine 1-1 has failed
+Sat Oct 14 13:33:18 2023 - [INFO] - PURGED: Machine 1-1 has failed and is removed from membership list
+Sat Oct 14 13:33:28 2023 - [INFO] - STARTING: grep server
+Sat Oct 14 13:33:28 2023 - [INFO] - STARTING: name node server
+Sat Oct 14 13:33:28 2023 - [INFO] - STARTING: data node server
+Sat Oct 14 13:33:33 2023 - [INFO] - STARTING: gossip server
+Sat Oct 14 13:33:33 2023 - [INFO] - STARTING: introducer
+Sat Oct 14 13:33:33 2023 - [INFO] - STARTING: gossip client
+Sat Oct 14 13:33:45 2023 - [INFO] - STARTING: grep server
+Sat Oct 14 13:33:45 2023 - [INFO] - STARTING: data node server
+Sat Oct 14 13:33:45 2023 - [INFO] - STARTING: name node server
+Sat Oct 14 13:33:45 2023 - [INFO] - STARTING: gossip server
+Sat Oct 14 13:33:45 2023 - [INFO] - STARTING: introducer
+Sat Oct 14 13:33:45 2023 - [INFO] - STARTING: gossip client
