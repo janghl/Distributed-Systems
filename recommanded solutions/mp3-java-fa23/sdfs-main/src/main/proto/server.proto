@@ -1,0 +1,276 @@
+syntax = "proto3";
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/empty.proto";
+
+option java_multiple_files = true;
+option java_package = "edu.illinois.cs425.grpcServices";
+
+service HeartbeatServer {
+  rpc heartbeat(MembershipListMessage) returns (google.protobuf.Empty);
+  
+  rpc introduce(IntroduceRequest) returns (IntroducerResponse);
+
+  rpc getMembershipList(google.protobuf.Empty) returns (MembershipListMessage);
+
+  rpc getNodeId(google.protobuf.Empty) returns (NodeId);
+
+  rpc getLeaderIndex(google.protobuf.Empty) returns (LeaderIndex);
+
+  rpc leave(google.protobuf.Empty) returns (google.protobuf.Empty);
+
+  rpc leaveLocal(NodeId) returns (google.protobuf.Empty);
+
+  rpc suspicion(SuspicionRequest) returns (google.protobuf.Empty);
+
+  //==============================leader election==============================
+  rpc requestVote(VoteRequest) returns (VoteResponse);
+
+  rpc confirmLeader(ConfirmLeaderRequest) returns (google.protobuf.Empty);
+
+//  rpc requestShardInfo(google.protobuf.Empty) returns (RequestSharedIdResponse);
+
+  //==============================leader service==============================
+  rpc initiateGetLeader (InitiateGetRequestLeader) returns (InitiateGetResponseLeader);
+  rpc finishGetLeader (FinishGetRequestLeader) returns (FinishGetResponseLeader);
+  rpc initiatePutLeader (InitiatePutRequestLeader) returns (InitiatePutResponseLeader);
+  rpc finishPutLeader (PutIndicesRequestLeader) returns (PutIndicesResponseLeader);
+  rpc initiateDeleteLeader (InitiateDeleteRequestLeader) returns (InitiateDeleteResponseLeader);
+  rpc finishDeleteLeader (FinishDeleteRequestLeader) returns (FinishDeleteResponseLeader);
+  rpc getFileLocationLeader (InitiateGetRequestLeader) returns (InitiateGetResponseLeader);
+}
+message VoteRequest {
+  int32 candidateIndex = 1;
+  int32 term = 2;
+}
+
+message ConfirmLeaderRequest {
+  int32 leaderIndex = 1;
+  string leaderIp = 2;
+  int32 term = 3;
+}
+
+message VoteResponse {
+  bool voteGranted = 1;
+  int32 term = 2;
+}
+
+message MembershipListMessage {
+  repeated MembershipEntry membershipList = 1;
+}
+
+message IntroduceRequest {
+  MembershipEntry membershipEntry = 1;
+}
+
+message IntroducerResponse {
+  repeated MembershipEntry membershipList = 1;
+  int32 leaderIndex = 2;
+  int32 term = 3;
+}
+
+message MembershipEntry {
+  NodeId nodeId = 1;
+  int32 heartbeatCounter = 2;
+  int32 incarnation = 3;
+  int32 status = 4; // enum ordinal values
+}
+
+message NodeId {
+  int32 nodeIndex = 1;
+  string nodeIp = 2;
+  int32 nodePort = 3;
+  int64 nodeTimestamp = 4;
+}
+
+message SuspicionRequest {
+  bool suspicion = 1;
+}
+
+message LeaderIndex {
+  int32 leaderIndex = 1;
+}
+
+//===========================================sdfs======================================================
+service SDFSNodeService {
+  rpc initiateGet (InitiateGetRequest) returns (InitiateGetResponse);
+  rpc finishGet (FinishGetRequest) returns (FinishGetResponse);
+  rpc initiatePut (InitiatePutRequest) returns (InitiatePutResponse);
+  rpc finishPut (PutIndicesRequest) returns (PutIndicesResponse);
+  rpc initiateDelete (InitiateDeleteRequest) returns (InitiateDeleteResponse);
+  rpc finishDelete (FinishDeleteRequest) returns (FinishDeleteResponse);
+  rpc replicateShard (ReplicateShardRequest) returns (ReplicateShardResponse);
+}
+
+service SDFSInternalService {
+  rpc putLocal (PutLocalRequest) returns (PutLocalResponse);
+  rpc getLocal (GetLocalRequest) returns (GetLocalResponse);
+  rpc deleteLocal (DeleteLocalRequest) returns (DeleteLocalResponse);
+  rpc getShardInfo (google.protobuf.Empty) returns (GetShardInfoResponse);
+}
+
+//====================get====================
+message InitiateGetRequest {
+  string sdfsFileName = 1;
+}
+
+message InitiateGetResponse {
+  repeated ShardReplicaLocations shards = 1;
+}
+
+message InitiateGetRequestLeader {
+  string sdfsFileName = 1;
+}
+
+message InitiateGetResponseLeader {
+  repeated ShardReplicaLocations shards = 1;
+}
+
+message GetLocalRequest {
+  string sdfsFileName = 1;
+  int32 shardId = 2;
+}
+
+message GetLocalResponse {
+  bytes fileContent = 1;
+  bool success = 2;
+}
+
+message FinishGetRequest {
+  string sdfsFileName = 1;
+}
+
+message FinishGetResponse {
+  bool success = 1;
+}
+
+message FinishGetRequestLeader {
+  string sdfsFileName = 1;
+}
+
+message FinishGetResponseLeader {
+  bool success = 1;
+}
+
+//====================put====================
+message InitiatePutRequest {
+  string sdfsFileName = 1;
+  int32 fileSize = 2;
+}
+
+message InitiatePutResponse {
+  repeated ShardReplicaLocations shards = 1;
+}
+
+message InitiatePutRequestLeader {
+  string sdfsFileName = 1;
+  int32 fileSize = 2;
+}
+
+message InitiatePutResponseLeader {
+  repeated ShardReplicaLocations shards = 1;
+}
+
+message PutLocalRequest {
+  string sdfsFileName = 2;
+  int32 shardId = 1;
+  bytes fileContent = 3;
+}
+
+message PutLocalResponse {
+  bool success = 2;
+}
+
+message PutIndicesRequest {
+  string sdfsFileName = 1;
+  repeated ShardReplicaLocations shards = 2;
+}
+
+message PutIndicesResponse {
+  bool success = 1;
+}
+
+message PutIndicesRequestLeader {
+  string sdfsFileName = 1;
+  repeated ShardReplicaLocations shards = 2;
+}
+
+message PutIndicesResponseLeader {
+  bool success = 1;
+}
+
+//====================delete====================
+message InitiateDeleteRequest {
+  string sdfsFileName = 1;
+}
+
+message InitiateDeleteResponse {
+//  bool success = 1;
+  repeated ShardReplicaLocations shards = 2;
+}
+
+message InitiateDeleteRequestLeader {
+  string sdfsFileName = 1;
+}
+
+message InitiateDeleteResponseLeader {
+//  bool success = 1;
+  repeated ShardReplicaLocations shards = 2;
+}
+
+message DeleteLocalRequest {
+  string sdfsFileName = 1;
+  int32 shardId = 2;
+}
+
+message DeleteLocalResponse {
+  bool success = 2;
+}
+
+message FinishDeleteRequest {
+  string sdfsFileName = 1;
+}
+
+message FinishDeleteResponse {
+  bool success = 1;
+}
+
+message FinishDeleteRequestLeader {
+  string sdfsFileName = 1;
+}
+
+message FinishDeleteResponseLeader {
+  bool success = 1;
+}
+
+//====================others====================
+message ShardReplicaLocations {
+  string sdfsFileName = 1;
+  repeated NodeId nodeIds = 3;
+  int32 shardId = 2;
+}
+
+message GetShardInfoResponse {
+  repeated ShardInfo shardInfos = 1;
+}
+
+message ShardInfo {
+  string sdfsFileName = 1;
+  int32 shardId = 2;
+}
+
+message ReplicateShardRequest {
+  NodeId newReplica = 1;
+  string sdfsFileName = 2;
+  int32 shardId = 3;
+}
+
+message ReplicateShardResponse {
+  bool success = 1;
+}
+
+//TODO: multiread
+//TODO: larger number of shards
+//TODO: write priority
+//TODO: test delete and leader rebuild
+
