@@ -1,0 +1,65 @@
+Start command:
+Chmod 777 first
+hadoop fs -cat /output/part-00000
+hadoop fs -rm -r /output
+
+Each time to change number of vms: change slaves file for each,
+Format the pdfs
+Restart the service, and run:
+hadoop fs -put Test.csv /
+(If anything bad happens, just reboot!)
+
+Command for test:
+hadoop jar /home/hj33/hadoop-2.7.7/share/hadoop/tools/lib/hadoop-streaming-2.7.7.jar -mapper test_maple.py -file ~/test_maple.py -reducer test_juice.py -file ~/test_juice.py    -input /book -output /output 
+
+
+command for filter of [A-Za-z]*L/[A-Za-z]*:
+hadoop jar /home/hj33/hadoop-2.7.7/share/hadoop/tools/lib/hadoop-streaming-2.7.7.jar -mapper "filter_maple.py select all from Test.csv where Intersecti = '[A-Za-z]*L/[A-Za-z]*'" -file ~/filter_maple.py -reducer filter_juice.py -file ~/filter_juice.py  -file ~/Test.csv  -input /Test.csv -output /output   
+
+
+command for filter of .*TT.*:
+hadoop jar /home/hj33/hadoop-2.7.7/share/hadoop/tools/lib/hadoop-streaming-2.7.7.jar -mapper "filter_maple.py select all from Test.csv where Intersecti = '.*TT.*'" -file ~/filter_maple.py -reducer filter_juice.py -file ~/filter_juice.py  -file ~/Test.csv  -input /Test.csv -output /output   
+
+
+
+Command for join D1.OBJECTID=D2.LOT:
+hadoop jar /home/hj33/hadoop-2.7.7/share/hadoop/tools/lib/hadoop-streaming-2.7.7.jar -mapper "join_maple.py select all from D1.csv and D2.csv where D1.OBJECTID=D2.LOT" -file ~/join_maple.py -reducer join_juice.py -file ~/join_juice.py  -file ~/D1.csv -file ~/D2.csv  -input /D1.csv -output /output   
+
+
+Command for join D1.OBJECTID=D3.FACILITYID:
+hadoop jar /home/hj33/hadoop-2.7.7/share/hadoop/tools/lib/hadoop-streaming-2.7.7.jar -mapper "join_maple.py select all from D1.csv and D3.csv where D1.OBJECTID=D3.FACILITYID" -file ~/join_maple.py -reducer join_juice.py -file ~/join_juice.py  -file ~/D1.csv -file ~/D3.csv  -input /D1.csv -output /output   
+
+
+D2.LOT=D4.OBJECTID:
+hadoop jar /home/hj33/hadoop-2.7.7/share/hadoop/tools/lib/hadoop-streaming-2.7.7.jar -mapper "join_maple.py select all from D2.csv and D4.csv where D2.LOT=D4.OBJECTID" -file ~/join_maple.py -reducer join_juice.py -file ~/join_juice.py  -file ~/D2.csv -file ~/D4.csv  -input /D2.csv -output /output 
+
+
+
+D2.HSENO=D4.UniqueID:
+hadoop jar /home/hj33/hadoop-2.7.7/share/hadoop/tools/lib/hadoop-streaming-2.7.7.jar -mapper "join_maple.py select all from D2.csv and D4.csv where D2.HSENO=D4.UniqueID" -file ~/join_maple.py -reducer join_juice.py -file ~/join_juice.py  -file ~/D2.csv -file ~/D4.csv  -input /D2.csv -output /output 
+
+
+D3.OBJECTID=D4.Stories:
+hadoop jar /home/hj33/hadoop-2.7.7/share/hadoop/tools/lib/hadoop-streaming-2.7.7.jar -mapper "join_maple.py select all from D3.csv and D4.csv where D3.OBJECTID=D4.Stories" -file ~/join_maple.py -reducer join_juice.py -file ~/join_juice.py  -file ~/D3.csv -file ~/D4.csv  -input /D3.csv -output /output 
+
+
+
+D3.OBJECTID=D4.Units:
+hadoop jar /home/hj33/hadoop-2.7.7/share/hadoop/tools/lib/hadoop-streaming-2.7.7.jar -mapper "join_maple.py select all from D3.csv and D4.csv where D3.OBJECTID=D4.Units" -file ~/join_maple.py -reducer join_juice.py -file ~/join_juice.py  -file ~/D3.csv -file ~/D4.csv  -input /D3.csv -output /output 
+
+
+D4.OBJECTID=D5.AddNum:
+hadoop jar /home/hj33/hadoop-2.7.7/share/hadoop/tools/lib/hadoop-streaming-2.7.7.jar -mapper "join_maple.py select all from D4.csv and D5.csv where D4.OBJECTID=D5.AddNum" -file ~/join_maple.py -reducer join_juice.py -file ~/join_juice.py  -file ~/D4.csv -file ~/D5.csv  -input /D4.csv -output /output 
+
+
+D4.Units=D5.CompAddNum:
+hadoop jar /home/hj33/hadoop-2.7.7/share/hadoop/tools/lib/hadoop-streaming-2.7.7.jar -mapper "join_maple.py select all from D4.csv and D5.csv where D4.Units=D5.CompAddNum" -file ~/join_maple.py -reducer join_juice.py -file ~/join_juice.py  -file ~/D4.csv -file ~/D5.csv  -input /D4.csv -output /output 
+
+
+
+
+
+Command for demo:
+hadoop jar /home/hj33/hadoop-2.7.7/share/hadoop/tools/lib/hadoop-streaming-2.7.7.jar -mapper "demo_maple.py select all from Test.csv where Interconne = Fiber" -file ~/demo_maple.py -reducer demo_juice.py -file ~/demo_juice.py  -file ~/Test.csv  -input /Test.csv -output /output   
+
+
